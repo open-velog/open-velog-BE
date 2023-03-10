@@ -2,14 +2,14 @@ package com.openvelog.openvelogbe.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@Builder
 public class ApiResponse<T> {
     enum MessageType {
         EXCEPTION("fail"),
@@ -35,17 +35,19 @@ public class ApiResponse<T> {
 
     private T data;
 
-    ApiResponse(HttpStatus httpStatus, MessageType messageType, T data) {
-        this.code = httpStatus.value();
-        this.message = messageType;
-        this.data = data;
-    }
-
     public static<T> ApiResponse<T> successOf(HttpStatus httpStatus, T dto) {
-        return new ApiResponse(httpStatus, MessageType.SUCCESS, dto);
+        return ApiResponse.<T> builder()
+                .code(httpStatus.value())
+                .message(MessageType.SUCCESS)
+                .data(dto)
+                .build();
     }
 
     public static ApiResponse<ErrorResponseDto> failOf(HttpStatus httpStatus, ErrorResponseDto errorResponseDto) {
-        return new ApiResponse(httpStatus, MessageType.EXCEPTION, errorResponseDto);
+        return ApiResponse.<ErrorResponseDto> builder()
+                .code(httpStatus.value())
+                .message(MessageType.SUCCESS)
+                .data(errorResponseDto)
+                .build();
     }
 }
