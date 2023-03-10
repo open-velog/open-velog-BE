@@ -10,12 +10,12 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 public class ChatMessage extends Timestamped {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String message;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;

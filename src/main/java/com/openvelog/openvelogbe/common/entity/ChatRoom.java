@@ -12,6 +12,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 public class ChatRoom extends Timestamped {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,9 +26,9 @@ public class ChatRoom extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member participant2;
 
-
     public void setParticipant1Null() {
         participant1 = null;
     }
+
     public void setParticipant2Null() { participant2 = null; }
 }
