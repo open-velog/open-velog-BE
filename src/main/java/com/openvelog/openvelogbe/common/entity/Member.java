@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 public class Member extends Timestamped {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,14 +30,13 @@ public class Member extends Timestamped {
     @Column(nullable = false)
     private String email;
 
-    private String profileImageURL;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    @Column(nullable = false)
+    private LocalDate birthday;
 
     @OneToMany(mappedBy = "member")
-    private Set<Board> boards = new LinkedHashSet<>();;
-
-    @OneToMany(mappedBy = "participant1")
-    private Set<ChatRoom> chatRoom1s = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "participant2")
-    private Set<ChatRoom> chatRoom2s = new LinkedHashSet<>();;
+    private Set<Blog> blogs = new LinkedHashSet<>();
 }

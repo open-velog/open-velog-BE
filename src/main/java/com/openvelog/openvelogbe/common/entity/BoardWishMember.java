@@ -6,10 +6,10 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity(name = "boards")
+@Entity(name = "board_wish_members")
 @Getter
 @NoArgsConstructor
-public class Board extends Timestamped {
+public class BoardWishMember extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,12 +18,10 @@ public class Board extends Timestamped {
     @Column(nullable = false, length = 30)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "text")
-    private String content;
-
-    private String imageURL;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Board board;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Blog blog;
+    private Member member;
 
 }
