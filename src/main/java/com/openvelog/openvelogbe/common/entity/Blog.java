@@ -5,11 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-@Entity(name = "boards")
+@Entity(name = "blogs")
 @Getter
 @NoArgsConstructor
-public class Board extends Timestamped {
+public class Blog extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,11 +21,12 @@ public class Board extends Timestamped {
     private String title;
 
     @Column(nullable = false, columnDefinition = "text")
-    private String content;
-
-    private String imageURL;
+    private String introduce;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Blog blog;
+    private Member member;
+
+    @OneToMany(mappedBy = "blog")
+    private Set<Board> boards = new LinkedHashSet<>();
 
 }

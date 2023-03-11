@@ -5,25 +5,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-@Entity(name = "boards")
+@Entity(name = "search_ages")
 @Getter
 @NoArgsConstructor
-public class Board extends Timestamped {
+public class SearchAge extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 30)
-    private String title;
-
-    @Column(nullable = false, columnDefinition = "text")
-    private String content;
-
-    private String imageURL;
+    @Column(nullable = false)
+    private Integer age;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Blog blog;
-
+    private AggregatedSearchTime searchTime;
 }
