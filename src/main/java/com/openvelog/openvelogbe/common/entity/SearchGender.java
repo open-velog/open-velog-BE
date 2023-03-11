@@ -1,6 +1,7 @@
 package com.openvelog.openvelogbe.common.entity;
 
 
+import com.openvelog.openvelogbe.common.entity.enums.Gender;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

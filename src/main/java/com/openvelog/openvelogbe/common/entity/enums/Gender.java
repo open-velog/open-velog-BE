@@ -1,4 +1,4 @@
-package com.openvelog.openvelogbe.common.entity;
+package com.openvelog.openvelogbe.common.entity.enums;
 
 
 import com.fasterxml.jackson.annotation.JsonValue;
