@@ -26,11 +26,11 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDto signup(SignupRequestDto signupRequestDto) {
-        String username = signupRequestDto.getUsername();
+        String userId = signupRequestDto.getUserId();
         String encodedPassword = passwordEncoder.encode(signupRequestDto.getPassword());
 
         // username 중복 확인
-        Optional<Member> found = memberRepository.findByUsername(username);
+        Optional<Member> found = memberRepository.findByUserId(userId);
         if (found.isPresent()) {
             throw new IllegalArgumentException(ErrorMessage.USERNAME_DUPLICATION.getMessage());
         }
