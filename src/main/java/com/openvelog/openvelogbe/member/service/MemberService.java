@@ -4,13 +4,17 @@ import com.openvelog.openvelogbe.common.dto.ErrorMessage;
 import com.openvelog.openvelogbe.common.entity.Member;
 import com.openvelog.openvelogbe.common.jwt.JwtUtil;
 import com.openvelog.openvelogbe.common.repository.MemberRepository;
+import com.openvelog.openvelogbe.member.dto.LoginRequestDto;
 import com.openvelog.openvelogbe.member.dto.MemberResponseDto;
 import com.openvelog.openvelogbe.member.dto.SignupRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
@@ -35,5 +39,20 @@ public class MemberService {
         memberRepository.save(newMember);
         return MemberResponseDto.of(newMember);
     }
+    @Transactional(readOnly = true)
+    public MemberResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
 
+        // 사용자 확인
+        Member member = memberRepository.findByUserId(loginRequestDto.getUserId()).orElseThrow(
+                () -> new EntityNotFoundException(ErrorMessage.WRONG_USERNAME.getMessage())
+        );
+
+        // 비밀번호 확인
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), member.getPassword())) {
+            throw new BadCredentialsException(ErrorMessage.WRONG_PASSWORD.getMessage());
+        }
+
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getUsername()));
+        return MemberResponseDto.of(member);
+    }
 }
