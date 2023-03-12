@@ -1,6 +1,9 @@
 package com.openvelog.openvelogbe.common.entity;
 
 import com.openvelog.openvelogbe.common.entity.enums.Gender;
+import com.openvelog.openvelogbe.member.dto.SignupRequestDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +14,8 @@ import java.util.Set;
 
 @Entity(name = "members")
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Member extends Timestamped {
 
@@ -40,4 +45,16 @@ public class Member extends Timestamped {
 
     @OneToMany(mappedBy = "member")
     private Set<Blog> blogs = new LinkedHashSet<>();
+
+    public static Member create(SignupRequestDto signupRequestDto, String encodedPassword) {
+        return Member.builder()
+                .userId(signupRequestDto.getUserId())
+                .username(signupRequestDto.getUsername())
+                .email(signupRequestDto.getEmail())
+                .password(encodedPassword)
+                .gender(signupRequestDto.getGender())
+                .birthday(signupRequestDto.getBirthday())
+                .build();
+    }
+
 }
