@@ -5,21 +5,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-@Entity(name = "chat_messages")
+@Entity(name = "search_ages")
 @Getter
 @NoArgsConstructor
-public class ChatMessage extends Timestamped {
+public class SearchAge extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String message;
+    @Column(nullable = false)
+    private Integer age;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Member member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private ChatRoom chatRoom;
+    private AggregatedSearchTime searchTime;
 }

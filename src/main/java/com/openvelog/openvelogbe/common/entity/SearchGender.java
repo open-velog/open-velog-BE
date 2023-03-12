@@ -1,29 +1,25 @@
 package com.openvelog.openvelogbe.common.entity;
 
 
+import com.openvelog.openvelogbe.common.entity.enums.Gender;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity(name = "boards")
+@Entity(name = "search_genders")
 @Getter
 @NoArgsConstructor
-public class Board extends Timestamped {
+public class SearchGender extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 30)
-    private String title;
-
-    @Column(nullable = false, columnDefinition = "text")
-    private String content;
-
-    private String imageURL;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Blog blog;
-
+    private AggregatedSearchTime searchTime;
 }
