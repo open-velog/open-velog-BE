@@ -29,7 +29,7 @@ public class Board extends Timestamped {
     private String content;
 
     @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
-    private BigInteger viewCount;
+    private Long viewCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Blog blog;
@@ -48,7 +48,7 @@ public class Board extends Timestamped {
     }
 
     public void addViewCount() {
-        this.viewCount = this.viewCount.add(BigInteger.valueOf(1));
+        this.viewCount += 1;
     }
 
     public static Board create(BoardRequestDto.BoardAdd dto, Blog blog) {
