@@ -9,9 +9,9 @@ import lombok.Setter;
 @Builder
 public class ErrorResponseDto {
     ErrorType errorType;
-    ErrorMessage errorMessage;
+    String errorMessage;
 
-    public static ErrorResponseDto of(ErrorType errorType, ErrorMessage errorMessage) {
+    public static ErrorResponseDto of(ErrorType errorType, String errorMessage) {
         return ErrorResponseDto.builder()
                 .errorType(errorType)
                 .errorMessage(errorMessage)

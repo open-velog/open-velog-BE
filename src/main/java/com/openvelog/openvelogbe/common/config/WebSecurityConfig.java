@@ -43,7 +43,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/docs/**")
+                .antMatchers("/swagger-ui/**", "/v3/api-docs/**")
                 .antMatchers("/version")
                 .requestMatchers(PathRequest.toH2Console())
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
@@ -56,8 +56,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         // 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-       /* http.headers().frameOptions().disable();
-        http.csrf().ignoringAntMatchers("/h2-console/**", "/version");*/
+//        http.headers().frameOptions().disable();
 
         http.authorizeRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
