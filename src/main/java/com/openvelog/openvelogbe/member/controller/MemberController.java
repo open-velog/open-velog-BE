@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -25,7 +22,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    @Operation(summary = "회원 가입", description = "username은 영문숫자 조합 4자 이상, 10자 이하\n password은 영문숫자 조합 8자 이상, 15자 이하\n, nickname은 아무 문자 4자 이상 20자 이하")
+    @Operation(summary = "회원 가입", description = "userId은 영문숫자 조합 4자 이상, 10자 이하\n password은 영문숫자 조합 8자 이상, 15자 이하\n, username은 아무 문자 4자 이상 20자 이하")
     public ApiResponse<MemberResponseDto> signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
         return ApiResponse.successOf(HttpStatus.CREATED, memberService.signup(signupRequestDto));
     }

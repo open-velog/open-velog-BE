@@ -46,7 +46,7 @@ public class ApiResponse<T> {
     public static ApiResponse<ErrorResponseDto> failOf(HttpStatus httpStatus, ErrorResponseDto errorResponseDto) {
         return ApiResponse.<ErrorResponseDto> builder()
                 .code(httpStatus.value())
-                .message(MessageType.SUCCESS)
+                .message(MessageType.EXCEPTION)
                 .data(errorResponseDto)
                 .build();
     }

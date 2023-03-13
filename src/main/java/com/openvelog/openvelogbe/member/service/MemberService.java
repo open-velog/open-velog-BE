@@ -29,10 +29,10 @@ public class MemberService {
         String userId = signupRequestDto.getUserId();
         String encodedPassword = passwordEncoder.encode(signupRequestDto.getPassword());
 
-        // username 중복 확인
+        // userId 중복 확인
         Optional<Member> found = memberRepository.findByUserId(userId);
         if (found.isPresent()) {
-            throw new IllegalArgumentException(ErrorMessage.USERNAME_DUPLICATION.getMessage());
+            throw new IllegalArgumentException(ErrorMessage.USERID_DUPLICATION.getMessage());
         }
 
         Member newMember = Member.create(signupRequestDto, encodedPassword);

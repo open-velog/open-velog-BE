@@ -14,6 +14,7 @@ public enum ErrorMessage {
     ACCESS_DENIED("권한이 없습니다."),
 
     USERNAME_DUPLICATION("username이 중복됐습니다."),
+    USERID_DUPLICATION("userid가 중복됐습니다."),
     WRONG_USERNAME("username이 일치하지 않습니다."),
     WRONG_PASSWORD("패스워드가 틀렸습니다."),
     WRONG_JWT_TOKEN("JWT Token이 잘못되었습니다.");

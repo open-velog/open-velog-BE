@@ -1,12 +1,15 @@
 package com.openvelog.openvelogbe.member.dto;
 
 import com.openvelog.openvelogbe.common.entity.enums.Gender;
+import com.openvelog.openvelogbe.common.entity.enums.ValidEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 
@@ -31,11 +34,14 @@ public class SignupRequestDto {
     @Schema(example = "user2323@gmail.com", description = "/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/")
     private String email;
 
-    @Pattern(regexp = "^(M|F)$")
-    @Schema(example = "M", description = "/^(M|F)$/")
+    @ValidEnum(enumClass = Gender.class)
+    //@Schema(example = "M", description = "/^(M|F)$/")
     private Gender gender;
-    @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$")
-    @Schema(example = "2023 03 13", description = "/^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$/")
+
+    //@DateValid(message = "8자리의 yyyy-MM-dd 형식이어야 합니다.", pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyyMMdd")
+    @PastOrPresent
+    @Schema(example = "2023-03-13", description = "/^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$/")
     private LocalDate birthday;
 
 
