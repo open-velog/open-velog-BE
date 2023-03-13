@@ -1,6 +1,10 @@
 package com.openvelog.openvelogbe.common.entity;
 
 
+import com.openvelog.openvelogbe.blog.dto.BlogRequestDto;
+import com.openvelog.openvelogbe.member.dto.SignupRequestDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +14,8 @@ import java.util.Set;
 
 @Entity(name = "blogs")
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Blog extends Timestamped {
 
@@ -29,4 +35,17 @@ public class Blog extends Timestamped {
     @OneToMany(mappedBy = "blog")
     private Set<Board> boards = new LinkedHashSet<>();
 
+
+    public static Blog create(BlogRequestDto.BlogAdd dto, Member member) {
+        return builder()
+                .title(dto.getTitle())
+                .introduce(dto.getIntroduce())
+                .member(member)
+                .build();
+    }
+
+    public void update(BlogRequestDto.BlogUpdate dto) {
+        this.title = dto.getTitle();
+        this.introduce = dto.getIntroduce();
+    }
 }

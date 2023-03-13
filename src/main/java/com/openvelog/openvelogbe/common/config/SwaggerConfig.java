@@ -1,5 +1,6 @@
 package com.openvelog.openvelogbe.common.config;
 
+import com.openvelog.openvelogbe.common.jwt.JwtUtil;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -20,7 +21,7 @@ class SwaggerConfig {
                 .description("API Description");
 
         // SecuritySecheme명
-        String jwtSchemeName = "Authorization";
+        String jwtSchemeName = "jwtAuth";
         // API 요청헤더에 인증정보 포함
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
         // SecuritySchemes 등록
