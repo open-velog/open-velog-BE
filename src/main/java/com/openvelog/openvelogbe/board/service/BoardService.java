@@ -41,11 +41,13 @@ public class BoardService {
         return BoardResponseDto.of(board);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public BoardResponseDto getBoard (Long boardId, Long memberId){
         Board board = boardRepository.findByIdJPQL(boardId).orElseThrow(
                 () -> new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
         );
+
+        board.addViewCount();
 
         return BoardResponseDto.of(board, memberId);
     }

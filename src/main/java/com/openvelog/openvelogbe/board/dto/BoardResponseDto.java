@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 
@@ -30,6 +31,8 @@ public class BoardResponseDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean isLike;
 
+    private BigInteger viewCount;
+
     @Schema(example = "생성 날짜")
     private LocalDateTime createdAt;
     @Schema(example = "수정 날짜")
@@ -42,6 +45,7 @@ public class BoardResponseDto {
                 .content(board.getContent())
                 .createdAt(board.getCreatedAt())
                 .modifiedAt(board.getModifiedAt())
+                .viewCount(board.getViewCount())
                 .wishCount(ObjectUtils.defaultIfNull(board.getWishes(), new HashSet<>()).size());
 
         return builder.build();
@@ -54,6 +58,7 @@ public class BoardResponseDto {
                 .content(board.getContent())
                 .createdAt(board.getCreatedAt())
                 .modifiedAt(board.getModifiedAt())
+                .viewCount(board.getViewCount())
                 .wishCount(ObjectUtils.defaultIfNull(board.getWishes(), new HashSet<>()).size());
         if (memberId != null) {
             builder.isLike(board.getBlog().getMember().getId().equals(memberId));
