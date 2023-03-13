@@ -50,7 +50,7 @@ public class Blog extends Timestamped {
     }
 
     @PreRemove
-    private void blogIdSetBullAtBoard() {
+    private void blogIdSetNullAtBoard() {
         this.getBoards().forEach(Board::setBlogNull);
     }
 }

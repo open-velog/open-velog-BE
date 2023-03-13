@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.math.BigInteger;
+import java.util.Set;
 
 @Entity(name = "boards")
 @Getter
@@ -26,10 +28,15 @@ public class Board extends Timestamped {
     @Column(nullable = false, columnDefinition = "text")
     private String content;
 
-    private String imageURL;
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long viewCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Blog blog;
+
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<BoardWishMember> wishes;
 
     public void setBlogNull() {
         this.blog = null;
@@ -38,6 +45,10 @@ public class Board extends Timestamped {
     public void update(BoardRequestDto.BoardUpdate dto) {
         this.title = dto.getTitle();
         this.content = dto.getContent();
+    }
+
+    public void addViewCount() {
+        this.viewCount += 1;
     }
 
     public static Board create(BoardRequestDto.BoardAdd dto, Blog blog) {
