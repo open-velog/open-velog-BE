@@ -7,6 +7,7 @@ import com.openvelog.openvelogbe.common.entity.Blog;
 import com.openvelog.openvelogbe.common.entity.Member;
 import com.openvelog.openvelogbe.common.repository.BlogRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,7 @@ public class BlogService {
         );
 
         if (!blog.getMember().getId().equals(member.getId())) {
-            throw new EntityNotFoundException(ErrorMessage.ACCESS_DENIED.getMessage());
+            throw new AccessDeniedException(ErrorMessage.ACCESS_DENIED.getMessage());
         }
 
         blog.update(dto);
@@ -47,7 +48,7 @@ public class BlogService {
         );
 
         if (!blog.getMember().getId().equals(member.getId())) {
-            throw new EntityNotFoundException(ErrorMessage.ACCESS_DENIED.getMessage());
+            throw new AccessDeniedException(ErrorMessage.ACCESS_DENIED.getMessage());
         }
 
         blogRepository.delete(blog);

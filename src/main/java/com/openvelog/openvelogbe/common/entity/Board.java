@@ -2,7 +2,6 @@ package com.openvelog.openvelogbe.common.entity;
 
 
 import com.openvelog.openvelogbe.board.dto.BoardRequestDto;
-import com.openvelog.openvelogbe.member.dto.SignupRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,15 +31,15 @@ public class Board extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     private Blog blog;
 
-    public void update(BoardRequestDto boardRequestDto) {
-        this.title = boardRequestDto.getTitle();
-        this.content = boardRequestDto.getContent();
+    public void update(BoardRequestDto.BoardUpdate dto) {
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
     }
 
-    public static Board create(BoardRequestDto boardRequestDto, Blog blog) {
+    public static Board create(BoardRequestDto.BoardAdd dto, Blog blog) {
         return Board.builder()
-                .title(boardRequestDto.getTitle())
-                .content(boardRequestDto.getContent())
+                .title(dto.getTitle())
+                .content(dto.getContent())
                 .blog(blog)
                 .build();
     }

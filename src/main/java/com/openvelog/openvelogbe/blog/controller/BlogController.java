@@ -5,7 +5,6 @@ import com.openvelog.openvelogbe.blog.dto.BlogResponseDto;
 import com.openvelog.openvelogbe.blog.service.BlogService;
 import com.openvelog.openvelogbe.common.dto.ApiResponse;
 import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
-import com.openvelog.openvelogbe.member.dto.MemberResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -38,7 +37,7 @@ public class BlogController {
             @PathVariable Long blogId,
             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
         blogService.deleteBlog(blogId, userDetails.getUser());
-        return ApiResponse.successOf(HttpStatus.OK, null);
+        return ApiResponse.successOf(HttpStatus.NO_CONTENT, null);
     }
 
     @PutMapping("/{blogId}")
