@@ -19,7 +19,7 @@ import java.io.OutputStream;
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private static final ErrorResponseDto ERROR_RESPONSE_DTO = ErrorResponseDto.of(ErrorType.AUTHENTICATION_EXCEPTION,
-            ErrorMessage.AUTHENTICATION_FAILED);
+            ErrorMessage.AUTHENTICATION_FAILED.getMessage());
 
     @Override
     public void commence(HttpServletRequest request,

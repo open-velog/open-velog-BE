@@ -19,7 +19,7 @@ import java.io.OutputStream;
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     private static final ErrorResponseDto ERROR_RESPONSE_DTO = ErrorResponseDto.of(ErrorType.ACCESS_DENIED_EXCEPTION,
-            ErrorMessage.ACCESS_DENIED);
+            ErrorMessage.ACCESS_DENIED.getMessage());
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException{
