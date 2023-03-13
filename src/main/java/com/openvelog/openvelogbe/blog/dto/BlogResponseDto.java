@@ -44,8 +44,13 @@ public class BlogResponseDto {
                 .title(blog.getTitle())
                 .introduce(blog.getIntroduce())
                 .createdAt(blog.getCreatedAt())
-                .boards(blog.getBoards().stream().map(BoardResponseDto::of).collect(Collectors.toList()))
                 .modifiedAt(blog.getModifiedAt());
+
+        if (blog.getBoards() != null) {
+            builder.boards(blog.getBoards().stream().map(BoardResponseDto::of).collect(Collectors.toList()));
+        }
+
+
 
         return builder.build();
     }
