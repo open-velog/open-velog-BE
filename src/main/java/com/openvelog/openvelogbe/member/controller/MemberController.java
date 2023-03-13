@@ -37,7 +37,7 @@ public class MemberController {
             @RequestBody LoginRequestDto loginRequestDto,
             @Parameter(hidden = true) HttpServletResponse response
     ) {
-        return ApiResponse.successOf(HttpStatus.CREATED, memberService.login(loginRequestDto, response));
+        return ApiResponse.successOf(HttpStatus.OK, memberService.login(loginRequestDto, response));
     }
 
 }

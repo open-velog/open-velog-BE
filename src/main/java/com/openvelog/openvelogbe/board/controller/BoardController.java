@@ -1,0 +1,59 @@
+package com.openvelog.openvelogbe.board.controller;
+
+import com.openvelog.openvelogbe.board.dto.BoardRequestDto;
+import com.openvelog.openvelogbe.board.dto.BoardResponseDto;
+import com.openvelog.openvelogbe.board.service.BoardService;
+import com.openvelog.openvelogbe.common.dto.ApiResponse;
+import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
+@Tag(name = "Board")
+@RestController
+@RequestMapping("/api/boards")
+@RequiredArgsConstructor
+public class BoardController {
+    private final BoardService boardService;
+
+    @PostMapping()
+    @Operation(summary = "게시글 작성", description ="해당 블로그Id를 갖는 블로그에 게시글 작성")
+    public ApiResponse<BoardResponseDto> createBoard
+            (@RequestParam(value = "blogId") Long blogId,
+             @RequestBody @Valid BoardRequestDto requestDto,
+             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ApiResponse.successOf(HttpStatus.CREATED, boardService.createBoard(blogId,requestDto,userDetails));
+    }
+
+    @GetMapping("/{boardId}")
+    @SecurityRequirements()
+    @Operation(summary = "게시글 조회", description ="특정 boardId를 갖는 단일 게시글 조회")
+    public ApiResponse<BoardResponseDto> getBoard(@PathVariable Long boardId){
+        return ApiResponse.successOf(HttpStatus.OK,boardService.getBoard(boardId));
+    }
+
+    @PutMapping("/{boardId}")
+    @Operation(summary = "게시글 수정", description ="특정 boardId의 게시글 수정")
+    public ApiResponse<BoardResponseDto> updateBoard
+            (@PathVariable Long boardId,
+             @RequestBody @Valid BoardRequestDto requestDto,
+             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ApiResponse.successOf(HttpStatus.CREATED,boardService.updateBoard(boardId,requestDto,userDetails));
+    }
+
+    @DeleteMapping("/{boardId}")
+    @Operation(summary = "게시글 삭제", description ="특정 boardId의 게시글 삭제")
+    public ApiResponse<BoardResponseDto> deleteStudyBoard(
+            @PathVariable Long boardId,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        boardService.deleteBoard(boardId,userDetails);
+        return ApiResponse.successOf(HttpStatus.NO_CONTENT,null);
+    }
+}
