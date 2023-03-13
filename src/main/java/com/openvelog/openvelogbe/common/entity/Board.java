@@ -31,6 +31,10 @@ public class Board extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     private Blog blog;
 
+    public void setBlogNull() {
+        this.blog = null;
+    }
+
     public void update(BoardRequestDto.BoardUpdate dto) {
         this.title = dto.getTitle();
         this.content = dto.getContent();
@@ -43,5 +47,6 @@ public class Board extends Timestamped {
                 .blog(blog)
                 .build();
     }
+
 
 }
