@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.math.BigInteger;
 import java.util.Set;
 
 @Entity(name = "boards")
@@ -27,7 +28,8 @@ public class Board extends Timestamped {
     @Column(nullable = false, columnDefinition = "text")
     private String content;
 
-    private String imageURL;
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private BigInteger viewCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Blog blog;
@@ -43,6 +45,10 @@ public class Board extends Timestamped {
     public void update(BoardRequestDto.BoardUpdate dto) {
         this.title = dto.getTitle();
         this.content = dto.getContent();
+    }
+
+    public void addViewCount() {
+        this.viewCount = this.viewCount.add(BigInteger.valueOf(1));
     }
 
     public static Board create(BoardRequestDto.BoardAdd dto, Blog blog) {
