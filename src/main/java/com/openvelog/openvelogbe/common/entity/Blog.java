@@ -48,4 +48,9 @@ public class Blog extends Timestamped {
         this.title = dto.getTitle();
         this.introduce = dto.getIntroduce();
     }
+
+    @PreRemove
+    private void blogIdSetBullAtBoard() {
+        this.getBoards().forEach(Board::setBlogNull);
+    }
 }
