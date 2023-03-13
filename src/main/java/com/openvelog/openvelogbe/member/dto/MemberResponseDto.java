@@ -3,6 +3,7 @@ package com.openvelog.openvelogbe.member.dto;
 import com.openvelog.openvelogbe.common.entity.Member;
 import com.openvelog.openvelogbe.common.entity.enums.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@Builder
 public class MemberResponseDto {
     @Schema(type = "integer", example = "2")
     private Long id;
@@ -35,18 +36,16 @@ public class MemberResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public MemberResponseDto(Member member) {
-        this.id = member.getId();
-        this.username = member.getUsername();
-        this.userId = member.getUserId();
-        this.email = member.getEmail();
-        this.createdAt = member.getCreatedAt();
-        this.modifiedAt = member.getModifiedAt();
-        this.gender= member.getGender();
-        this.birthday=member.getBirthday();
-    }
-
     public static MemberResponseDto of(Member member) {
-        return new MemberResponseDto(member);
+        return MemberResponseDto.builder()
+                .id(member.getId())
+                .username(member.getUsername())
+                .userId(member.getUserId())
+                .email(member.getEmail())
+                .gender(member.getGender())
+                .birthday(member.getBirthday())
+                .createdAt(member.getCreatedAt())
+                .modifiedAt(member.getModifiedAt())
+                .build();
     }
 }

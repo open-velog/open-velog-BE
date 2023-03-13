@@ -1,6 +1,7 @@
 package com.openvelog.openvelogbe.common.entity;
 
 import com.openvelog.openvelogbe.common.entity.enums.Gender;
+import com.openvelog.openvelogbe.common.entity.enums.ValidEnum;
 import com.openvelog.openvelogbe.member.dto.SignupRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +38,7 @@ public class Member extends Timestamped {
     private String email;
 
     @Column(nullable = false)
+    @ValidEnum(enumClass = Gender.class)
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
