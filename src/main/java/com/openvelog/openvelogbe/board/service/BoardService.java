@@ -12,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.Tuple;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,11 +42,12 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public BoardResponseDto getBoard (Long boardId){
-        Board board = boardRepository.findById(boardId).orElseThrow(
+    public BoardResponseDto getBoard (Long boardId, Long memberId){
+        Board board = boardRepository.findByIdJPQL(boardId).orElseThrow(
                 () -> new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
         );
-        return BoardResponseDto.of(board);
+
+        return BoardResponseDto.of(board, memberId);
     }
 
     @Transactional
@@ -54,7 +57,7 @@ public class BoardService {
             UserDetailsImpl userDetails
     ) {
         Board board = boardRepository.findById(boardId).orElseThrow(
-                ()->new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
+                () -> new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
         );
 
         if (!userDetails.getUser().getId().equals(board.getBlog().getMember().getId())) {
@@ -83,8 +86,8 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public List<BoardResponseDto> searchBoards (String keyword){
+    public List<BoardResponseDto> searchBoards (String keyword, Long memberId){
         List<Board> boards = boardRepository.searchTitleOrContentOrBlogTitle(keyword);
-        return boards.stream().map(BoardResponseDto::of).collect(Collectors.toList());
+        return boards.stream().map(board -> BoardResponseDto.of(board, memberId)).collect(Collectors.toList());
     }
 }

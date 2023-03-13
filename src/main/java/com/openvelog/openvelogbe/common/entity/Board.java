@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity(name = "boards")
 @Getter
@@ -30,6 +31,10 @@ public class Board extends Timestamped {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Blog blog;
+
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<BoardWishMember> wishes;
 
     public void setBlogNull() {
         this.blog = null;

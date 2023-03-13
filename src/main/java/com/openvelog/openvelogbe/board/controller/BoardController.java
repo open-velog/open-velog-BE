@@ -36,15 +36,15 @@ public class BoardController {
     @GetMapping("/search")
     @SecurityRequirements()
     @Operation(summary = "게시글 조회", description ="특정 boardId를 갖는 단일 게시글 조회")
-    public ApiResponse<List<BoardResponseDto>> searchBoards(@RequestParam String keyword){
-        return ApiResponse.successOf(HttpStatus.OK, boardService.searchBoards(keyword));
+    public ApiResponse<List<BoardResponseDto>> searchBoards(@RequestParam String keyword, @RequestParam(required = false) Long memberId){
+        return ApiResponse.successOf(HttpStatus.OK, boardService.searchBoards(keyword, memberId));
     }
 
     @GetMapping("/{boardId}")
     @SecurityRequirements()
     @Operation(summary = "게시글 조회", description ="특정 boardId를 갖는 단일 게시글 조회")
-    public ApiResponse<BoardResponseDto> getBoard(@PathVariable Long boardId){
-        return ApiResponse.successOf(HttpStatus.OK, boardService.getBoard(boardId));
+    public ApiResponse<BoardResponseDto> getBoard(@PathVariable Long boardId, @RequestParam(required = false) Long memberId){
+        return ApiResponse.successOf(HttpStatus.OK, boardService.getBoard(boardId, memberId));
     }
 
     @PutMapping("/{boardId}")

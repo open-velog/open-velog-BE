@@ -48,6 +48,9 @@ public class Member extends Timestamped {
     @OneToMany(mappedBy = "member")
     private Set<Blog> blogs = new LinkedHashSet<>();
 
+    @OneToMany(mappedBy = "member")
+    private Set<BoardWishMember> wishes;
+
     public static Member create(SignupRequestDto signupRequestDto, String encodedPassword) {
         return Member.builder()
                 .userId(signupRequestDto.getUserId())
@@ -57,6 +60,11 @@ public class Member extends Timestamped {
                 .gender(signupRequestDto.getGender())
                 .birthday(signupRequestDto.getBirthday())
                 .build();
+    }
+
+    @PreRemove
+    private void memberIdSetNullAtBoardWish() {
+        this.getWishes().forEach(BoardWishMember::setMemberNull);
     }
 
 }
