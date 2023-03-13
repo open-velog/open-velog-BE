@@ -9,18 +9,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-class SpringDocsConfig {
+class SwaggerConfig {
 
     @Bean
     public OpenAPI openAPI() {
 
         Info info = new Info()
                 .version("v1.0.0")
-                .title("OPEN VELOG 🖋")
+                .title("REVIEW KURLY 🖋")
                 .description("API Description");
 
         // SecuritySecheme명
-        String jwtSchemeName = "jwtAuth";
+        String jwtSchemeName = "Authorization";
         // API 요청헤더에 인증정보 포함
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
         // SecuritySchemes 등록
