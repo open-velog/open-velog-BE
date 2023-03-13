@@ -15,6 +15,7 @@ public enum ErrorMessage {
 
     USERNAME_DUPLICATION("username이 중복됐습니다."),
     USERID_DUPLICATION("userid가 중복됐습니다."),
+    BLOG_DUPLICATION("해당유저는 이미 블로그를 가지고 있습니다."),
     WRONG_USERNAME("username이 일치하지 않습니다."),
     WRONG_PASSWORD("패스워드가 틀렸습니다."),
     WRONG_JWT_TOKEN("JWT Token이 잘못되었습니다."),

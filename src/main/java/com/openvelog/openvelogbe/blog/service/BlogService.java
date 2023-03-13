@@ -20,6 +20,11 @@ public class BlogService {
 
     @Transactional
     public BlogResponseDto createBlog(BlogRequestDto.BlogAdd dto, Member member) {
+
+        if(blogRepository.findByMemberId(member.getId()).isPresent()) {
+            throw new IllegalArgumentException(ErrorMessage.BLOG_DUPLICATION.getMessage());
+        }
+
         Blog blog = Blog.create(dto, member);
 
         return BlogResponseDto.of(blogRepository.save(blog));
