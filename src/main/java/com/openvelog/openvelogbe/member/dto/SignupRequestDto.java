@@ -35,7 +35,7 @@ public class SignupRequestDto {
     private String email;
 
     @ValidEnum(enumClass = Gender.class)
-    //@Schema(example = "M", description = "/^(M|F)$/")
+    @Schema(example = "man", description = "/^(man|woman)$/")
     private Gender gender;
 
     //@DateValid(message = "8자리의 yyyy-MM-dd 형식이어야 합니다.", pattern = "yyyy-MM-dd")
