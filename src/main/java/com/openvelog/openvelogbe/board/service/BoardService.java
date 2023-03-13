@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -78,5 +80,11 @@ public class BoardService {
         }
 
         boardRepository.deleteById(board.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public List<BoardResponseDto> searchBoards (String keyword){
+        List<Board> boards = boardRepository.searchTitleOrContentOrBlogTitle(keyword);
+        return boards.stream().map(BoardResponseDto::of).collect(Collectors.toList());
     }
 }

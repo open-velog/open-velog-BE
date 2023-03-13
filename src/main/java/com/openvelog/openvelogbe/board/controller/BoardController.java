@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Tag(name = "Board")
 @RestController
@@ -29,6 +30,14 @@ public class BoardController {
              @RequestBody @Valid BoardRequestDto.BoardAdd dto,
              @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ApiResponse.successOf(HttpStatus.CREATED, boardService.createBoard(dto, userDetails));
+    }
+
+
+    @GetMapping("/search")
+    @SecurityRequirements()
+    @Operation(summary = "게시글 조회", description ="특정 boardId를 갖는 단일 게시글 조회")
+    public ApiResponse<List<BoardResponseDto>> searchBoards(@RequestParam String keyword){
+        return ApiResponse.successOf(HttpStatus.OK, boardService.searchBoards(keyword));
     }
 
     @GetMapping("/{boardId}")
