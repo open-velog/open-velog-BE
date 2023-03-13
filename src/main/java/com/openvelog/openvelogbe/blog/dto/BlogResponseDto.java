@@ -1,28 +1,17 @@
 package com.openvelog.openvelogbe.blog.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.openvelog.openvelogbe.board.dto.BoardResponseDto;
 import com.openvelog.openvelogbe.common.entity.Blog;
-import com.openvelog.openvelogbe.common.entity.Board;
-import com.openvelog.openvelogbe.common.entity.Member;
 import com.openvelog.openvelogbe.member.dto.MemberResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
-
-import javax.persistence.*;
-import java.io.IOException;
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -42,6 +31,9 @@ public class BlogResponseDto {
     @Schema(example = "블로그 주인")
     private MemberResponseDto member;
 
+    @Schema(example = "블로그에 달린 게시글 목록")
+    private List<BoardResponseDto> boards = new ArrayList<>();
+
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
@@ -52,6 +44,7 @@ public class BlogResponseDto {
                 .title(blog.getTitle())
                 .introduce(blog.getIntroduce())
                 .createdAt(blog.getCreatedAt())
+                .boards(blog.getBoards().stream().map(BoardResponseDto::of).collect(Collectors.toList()))
                 .modifiedAt(blog.getModifiedAt());
 
         return builder.build();
