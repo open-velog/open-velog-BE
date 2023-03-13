@@ -31,7 +31,7 @@ public class BoardResponseDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean isLike;
 
-    private BigInteger viewCount;
+    private Long viewCount;
 
     @Schema(example = "생성 날짜")
     private LocalDateTime createdAt;
