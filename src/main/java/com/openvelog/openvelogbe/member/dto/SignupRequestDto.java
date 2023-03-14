@@ -17,20 +17,20 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 public class SignupRequestDto {
-    @Pattern(regexp = "^(?=.*?[0-9])(?=.*?[a-z]).{6,16}$")
+    @Pattern(regexp = "^(?=.*?[0-9])(?=.*?[a-z]).{6,16}$", message = "잘못된 양식의 아이디를 입력하셨습니다.")
     @Schema(example = "userId", description = "/^(?=.*?[0-9])(?=.*?[a-z]).{6,16}$/")
     private String userId;
 
-    @Pattern(regexp = "^[a-zA-Z가-힣ㄱ-ㅎㅏ-ㅣ0-9]{3,10}$")
+    @Pattern(regexp = "^[a-zA-Z가-힣ㄱ-ㅎㅏ-ㅣ0-9]{3,10}$", message = "잘못된 양식의 닉네임을 입력하셨습니다.")
     @Schema(example = "nickname", description = "/^[a-zA-Z가-힣ㄱ-ㅎㅏ-ㅣ0-9]{2,10}$/")
     private String username;
 
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d$@$!%*#?&]{8,}$")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d$@$!%*#?&]{8,}$", message = "잘못된 양식의 비밀번호를 입력하셨습니다.")
     @Schema(example = "password", description = "/^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,}$/")
     private String password;
 
     //@Email
-    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
+    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "잘못된 양식의 이메일을 입력하셨습니다.")
     @Schema(example = "user2323@gmail.com", description = "/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/")
     private String email;
 
