@@ -52,7 +52,7 @@ public class MemberService {
             throw new BadCredentialsException(ErrorMessage.WRONG_PASSWORD.getMessage());
         }
 
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getUsername()));
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getUserId()));
         return MemberResponseDto.of(member);
     }
 }
