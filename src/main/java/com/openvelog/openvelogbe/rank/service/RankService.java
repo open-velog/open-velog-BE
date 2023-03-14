@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.Tuple;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,13 +22,13 @@ public class RankService {
 
     private final KeywordRecordRepository keywordRecordRepository;
 
-    public List<RankResponseDto.RankKeyword> getKeywordRank(AgeRange ageRange, Gender gender, Integer limit) {
+    public List<RankResponseDto.RankKeyword> getKeywordRank(AgeRange ageRange, Gender gender, LocalDate date, Integer limit) {
 
         Sort sort = Sort.by("kCount").descending();
 
         Pageable pageable = PageRequest.of(0, limit, sort);
 
-        List<Tuple> rankKeywords = keywordRecordRepository.getRankOfKeywordJPQL(ageRange, gender, pageable);
+        List<Tuple> rankKeywords = keywordRecordRepository.getRankOfKeywordJPQL(ageRange, gender, date, pageable);
 
         return rankKeywords.stream().map(v -> {
             Long kCount = v.get("kCount", Long.class);

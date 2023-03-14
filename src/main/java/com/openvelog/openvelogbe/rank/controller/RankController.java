@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.beans.PropertyEditorSupport;
+import java.time.LocalDate;
 import java.util.List;
 
 @Tag(name = "Rank")
@@ -33,8 +34,9 @@ public class RankController {
     public ApiResponse<List<RankResponseDto.RankKeyword>> getRanks(
             @RequestParam(required = false) @Valid AgeRange ageRange,
             @RequestParam(required = false) @Valid Gender gender,
+            @RequestParam(required = false, defaultValue = "2023-03-14") String date,
             @RequestParam @Valid @NotNull Integer limit) {
 
-        return ApiResponse.successOf(HttpStatus.OK, rankService.getKeywordRank(ageRange, gender, limit));
+        return ApiResponse.successOf(HttpStatus.OK, rankService.getKeywordRank(ageRange, gender, LocalDate.parse(date), limit));
     }
 }
