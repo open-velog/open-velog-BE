@@ -1,7 +1,7 @@
-package com.openvelog.openvelogbe.redis.controller;
+package com.openvelog.openvelogbe.keyword.controller;
 
 import com.openvelog.openvelogbe.common.dto.ApiResponse;
-import com.openvelog.openvelogbe.redis.service.RankingService;
+import com.openvelog.openvelogbe.keyword.service.KeywordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Ranking")
+@Tag(name = "Keyword")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/redis")
-public class RedisRankingController {
-    private final RankingService rankingService;
+@RequestMapping("/api/keywords")
+public class KeywordController {
+    private final KeywordService keywordService;
 
-    @GetMapping("/ranking")
+    @GetMapping()
     @SecurityRequirements()
-    @Operation(summary = "검색순위", description ="검색 순위 별로 블로그 제목 나열")
-    public ApiResponse getRankingList() {
-        return ApiResponse.successOf(HttpStatus.OK,rankingService.getRankingList());
+    @Operation(summary = "검색기록 확인", description ="게시글 검색 시 redis에 저장된 데이터 확인")
+    public ApiResponse getRedisData() {
+        return ApiResponse.successOf(HttpStatus.OK,keywordService.getKeywords());
     }
 }

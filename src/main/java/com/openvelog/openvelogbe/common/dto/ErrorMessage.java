@@ -12,7 +12,7 @@ public enum ErrorMessage {
     BLOG_NOT_FOUND("해당 블로그가 존재하지 않습니다."),
     AUTHENTICATION_FAILED("JWT가 올바르지 않습니다"),
     ACCESS_DENIED("권한이 없습니다."),
-
+    KEYWORD_NOT_FOUND("해당 키워드 검색 기록이 없습니다"),
     USERNAME_DUPLICATION("username이 중복됐습니다."),
     USERID_DUPLICATION("userid가 중복됐습니다."),
     BLOG_DUPLICATION("해당유저는 이미 블로그를 가지고 있습니다."),

@@ -36,14 +36,14 @@ public class RedisConfig {
 
     //lettuce 사용시 해당 빈을 사용
     //string <-> string
-    @Bean
+    /*@Bean
     public RedisTemplate<String, String> redisTemplate() {
         RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());//key 깨짐 방지
         redisTemplate.setValueSerializer(new StringRedisSerializer());//value 깨짐 방지
         return redisTemplate;
-    }
+    }*/
 
     //String <-> Object
     /*@Bean
@@ -54,5 +54,10 @@ public class RedisConfig {
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
         return redisTemplate;
     }*/
-
+    @Bean
+    public RedisTemplate<?, ?> redisTemplate() {
+        RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        return redisTemplate;
+    }
 }
