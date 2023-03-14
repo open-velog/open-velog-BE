@@ -56,6 +56,7 @@ public class Board extends Timestamped {
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .blog(blog)
+                .viewCount(0L)
                 .build();
     }
 

@@ -51,7 +51,7 @@ public class BoardResponseDto {
         return builder.build();
     }
 
-    public static BoardResponseDto of(Board board, Long memberId){
+    public static BoardResponseDto of(Board board, Member member){
         BoardResponseDtoBuilder builder = BoardResponseDto.builder()
                 .id(board.getId())
                 .title(board.getTitle())
@@ -60,8 +60,9 @@ public class BoardResponseDto {
                 .modifiedAt(board.getModifiedAt())
                 .viewCount(board.getViewCount())
                 .wishCount(ObjectUtils.defaultIfNull(board.getWishes(), new HashSet<>()).size());
-        if (memberId != null) {
-            builder.isLike(board.getBlog().getMember().getId().equals(memberId));
+        if (member != null) {
+            Boolean likeBoard = board.getWishes().stream().anyMatch(v -> v.getMember().getId().equals(member.getId()));
+            builder.isLike(likeBoard);
         }
 
         return builder.build();
