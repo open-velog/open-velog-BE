@@ -44,7 +44,7 @@ public class MemberService {
 
         // 사용자 확인
         Member member = memberRepository.findByUserId(loginRequestDto.getUserId()).orElseThrow(
-                () -> new EntityNotFoundException(ErrorMessage.WRONG_USERNAME.getMessage())
+                () -> new EntityNotFoundException(ErrorMessage.WRONG_USERID.getMessage())
         );
 
         // 비밀번호 확인
@@ -52,7 +52,7 @@ public class MemberService {
             throw new BadCredentialsException(ErrorMessage.WRONG_PASSWORD.getMessage());
         }
 
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getUsername()));
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getUserId()));
         return MemberResponseDto.of(member);
     }
 }
