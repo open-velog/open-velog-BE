@@ -14,7 +14,6 @@ import com.openvelog.openvelogbe.common.repository.KeywordRedisRepository;
 import com.openvelog.openvelogbe.common.repository.MemberRepository;
 import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
 import com.openvelog.openvelogbe.common.util.GetAgeRange;
-import com.openvelog.openvelogbe.keyword.service.KeywordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,6 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BlogRepository blogRepository;
-    private final MemberRepository memberRepository;
     private final KeywordRedisRepository redisRepository;
     @Transactional
     public BoardResponseDto createBoard(BoardRequestDto.BoardAdd dto, UserDetailsImpl userDetails) {
@@ -44,19 +42,20 @@ public class BoardService {
         }
 
         Board board = Board.create(dto,blog);
-        boardRepository.save(board);
+        board = boardRepository.save(board);
         return BoardResponseDto.of(board);
     }
 
     @Transactional
-    public BoardResponseDto getBoard (Long boardId, Long memberId){
+    public BoardResponseDto getBoard (Long boardId, UserDetailsImpl userDetails){
+        Member member = userDetails != null ? userDetails.getUser() : null;
         Board board = boardRepository.findByIdJPQL(boardId).orElseThrow(
                 () -> new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
         );
 
         board.addViewCount();
 
-        return BoardResponseDto.of(board, memberId);
+        return BoardResponseDto.of(board, member);
     }
 
     @Transactional
@@ -94,15 +93,17 @@ public class BoardService {
         boardRepository.deleteById(board.getId());
     }
 
-    @Transactional(readOnly = true)
-    public List<BoardResponseDto> searchBoards (String keyword, Long memberId){
+    @Transactional
+    public List<BoardResponseDto> searchBoards (String keyword, UserDetailsImpl userDetails){
+        Member member = userDetails != null ? userDetails.getUser() : null;
         List<Board> boards = boardRepository.searchTitleOrContentOrBlogTitle(keyword);
-        Member member = memberRepository.findById(memberId).orElseThrow(
-                ()->new EntityNotFoundException(ErrorMessage.MEMBER_NOT_FOUND.getMessage())
-        );
         GetAgeRange getAgeRange = new GetAgeRange();
-        Keyword newkeyword = new Keyword (keyword, member, getAgeRange.getAge(member));
+
+        AgeRange ageRange = member != null ? getAgeRange.getAge(member) : null;
+        Keyword newkeyword = new Keyword (keyword, member, ageRange);
         redisRepository.save(newkeyword);
-        return boards.stream().map(board -> BoardResponseDto.of(board, memberId)).collect(Collectors.toList());
+
+
+        return boards.stream().map(board -> BoardResponseDto.of(board, member)).collect(Collectors.toList());
     }
 }

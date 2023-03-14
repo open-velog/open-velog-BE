@@ -34,17 +34,17 @@ public class BoardController {
 
 
     @GetMapping("/search")
-    @SecurityRequirements()
-    @Operation(summary = "게시글 조회", description ="특정 boardId를 갖는 단일 게시글 조회")
-    public ApiResponse<List<BoardResponseDto>> searchBoards(@RequestParam String keyword, @RequestParam(required = false) Long memberId){
-        return ApiResponse.successOf(HttpStatus.OK, boardService.searchBoards(keyword, memberId));
+    @Operation(summary = "게시글 검색", description ="게시글 제목, 내용, 해당 블로그의 제목에 키워드가 포함된 게시글 목록 조회")
+    public ApiResponse<List<BoardResponseDto>> searchBoards(@RequestParam String keyword, @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ApiResponse.successOf(HttpStatus.OK, boardService.searchBoards(keyword, userDetails));
     }
 
     @GetMapping("/{boardId}")
-    @SecurityRequirements()
     @Operation(summary = "게시글 조회", description ="특정 boardId를 갖는 단일 게시글 조회")
-    public ApiResponse<BoardResponseDto> getBoard(@PathVariable Long boardId, @RequestParam(required = false) Long memberId){
-        return ApiResponse.successOf(HttpStatus.OK, boardService.getBoard(boardId, memberId));
+    public ApiResponse<BoardResponseDto> getBoard(
+            @PathVariable Long boardId,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ApiResponse.successOf(HttpStatus.OK, boardService.getBoard(boardId, userDetails));
     }
 
     @PutMapping("/{boardId}")

@@ -30,8 +30,10 @@ public class Keyword {
     @Builder
     public Keyword(String keyword, Member member, AgeRange ageRange){
         this.keyword = keyword;
-        this.memberId = member.getId();
-        this.gender = member.getGender();
+        if (member != null) {
+            this.memberId = member.getId();
+            this.gender = member.getGender();
+        }
         this.createdAt=LocalDate.now();
         this.ageRange = ageRange;
     }
