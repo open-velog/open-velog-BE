@@ -55,4 +55,8 @@ public class MemberService {
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getUserId()));
         return MemberResponseDto.of(member);
     }
+
+    public Boolean checkUserId(String userId) {
+        return memberRepository.findByUserId(userId).isPresent();
+    }
 }
