@@ -22,9 +22,6 @@ public class BlogResponseDto {
     @Schema(type = "integer", example = "2")
     private Long id;
 
-    @Schema(example = "블로그 타이틀")
-    private String title;
-
     @Schema(example = "블로그 소개글")
     private String introduce;
 
@@ -41,7 +38,6 @@ public class BlogResponseDto {
 
         BlogResponseDtoBuilder builder = builder()
                 .id(blog.getId())
-                .title(blog.getTitle())
                 .introduce(blog.getIntroduce())
                 .createdAt(blog.getCreatedAt())
                 .modifiedAt(blog.getModifiedAt());

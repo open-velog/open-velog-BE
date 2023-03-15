@@ -1,10 +1,9 @@
 package com.openvelog.openvelogbe.rank.service;
 
-import com.openvelog.openvelogbe.common.entity.KeywordRecord;
 import com.openvelog.openvelogbe.common.entity.enums.AgeRange;
 import com.openvelog.openvelogbe.common.entity.enums.Gender;
 import com.openvelog.openvelogbe.common.repository.KeywordRecordRepository;
-import com.openvelog.openvelogbe.rank.RankResponseDto;
+import com.openvelog.openvelogbe.rank.dto.RankResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
