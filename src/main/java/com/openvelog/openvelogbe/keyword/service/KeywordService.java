@@ -23,4 +23,13 @@ public class KeywordService {
         }
         return list;
     }
+
+    public List<KeyWordResponseDto> getKeywordsByKeyword(String keyword){
+        List<Keyword> keywords = redisRepository.findByKeyword(keyword);
+        List<KeyWordResponseDto> list = new ArrayList<>();
+        for(Keyword findkeyword : keywords){
+            list.add(KeyWordResponseDto.of(findkeyword));
+        }
+        return list;
+    }
 }

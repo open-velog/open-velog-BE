@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface KeywordRedisRepository extends CrudRepository<Keyword, String> {
     @Override
     List<Keyword> findAll();
+    List<Keyword> findByKeyword(String keyword);
 }
