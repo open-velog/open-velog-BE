@@ -17,7 +17,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @EntityGraph(attributePaths = {
             "wishes", "blog", "blog.member"
     })
-    List<Board> searchTitleOrContentOrBlogTitle(String keyword);
+    List<Board> searchTitleOrContentOrBlogTitle(String keyword, Pageable pageable);
     Optional<Board> findById(Long boardId);
 
     @Query("select b from boards b where b.id = :boardId")
