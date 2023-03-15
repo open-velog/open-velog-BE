@@ -23,10 +23,7 @@ public class Blog extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 30)
-    private String title;
-
-    @Column(nullable = false, columnDefinition = "text")
+    @Column(columnDefinition = "text")
     private String introduce;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,14 +35,12 @@ public class Blog extends Timestamped {
 
     public static Blog create(BlogRequestDto.BlogAdd dto, Member member) {
         return builder()
-                .title(dto.getTitle())
                 .introduce(dto.getIntroduce())
                 .member(member)
                 .build();
     }
 
     public void update(BlogRequestDto.BlogUpdate dto) {
-        this.title = dto.getTitle();
         this.introduce = dto.getIntroduce();
     }
 

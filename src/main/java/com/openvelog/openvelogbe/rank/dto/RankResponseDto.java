@@ -1,4 +1,4 @@
-package com.openvelog.openvelogbe.rank;
+package com.openvelog.openvelogbe.rank.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

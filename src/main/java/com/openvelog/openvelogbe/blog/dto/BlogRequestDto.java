@@ -20,20 +20,12 @@ public class BlogRequestDto {
     public static class BlogAdd {
 
         @NotBlank
-        @Size(min = 3, max = 30, message = "제목은 3자 이상 30자 이하이여야합니다.")
-        private String title;
-
-        @NotBlank
         private String introduce;
     }
 
     @Getter
     @AllArgsConstructor
     public static class BlogUpdate {
-
-        @NotBlank
-        @Size(min = 3, max = 30, message = "제목은 3자 이상 30자 이하이여야합니다.")
-        private String title;
 
         @NotBlank
         private String introduce;
