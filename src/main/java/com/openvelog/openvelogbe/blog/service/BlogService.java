@@ -61,10 +61,10 @@ public class BlogService {
 
     @Transactional(readOnly = true)
     public BlogResponseDto getBlog(Long blogId) {
-        Blog blog = blogRepository.findByIdWithBoardsJPQL(blogId).orElseThrow(
+        Blog blog = blogRepository.findByMemberIdJPQL(blogId).orElseThrow(
                 () -> new EntityNotFoundException(ErrorMessage.NO_BLOG.getMessage())
         );
 
-        return BlogResponseDto.of(blog);
+        return BlogResponseDto.ofNoBoards(blog);
     }
 }
