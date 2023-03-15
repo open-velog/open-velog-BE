@@ -1,8 +1,10 @@
 package com.openvelog.openvelogbe.member.service;
 
 import com.openvelog.openvelogbe.common.dto.ErrorMessage;
+import com.openvelog.openvelogbe.common.entity.Blog;
 import com.openvelog.openvelogbe.common.entity.Member;
 import com.openvelog.openvelogbe.common.jwt.JwtUtil;
+import com.openvelog.openvelogbe.common.repository.BlogRepository;
 import com.openvelog.openvelogbe.common.repository.MemberRepository;
 import com.openvelog.openvelogbe.member.dto.LoginRequestDto;
 import com.openvelog.openvelogbe.member.dto.MemberResponseDto;
@@ -23,6 +25,7 @@ public class MemberService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+    private final BlogRepository blogRepository;
 
     @Transactional
     public MemberResponseDto signup(SignupRequestDto signupRequestDto) {
@@ -37,6 +40,7 @@ public class MemberService {
 
         Member newMember = Member.create(signupRequestDto, encodedPassword);
         memberRepository.save(newMember);
+        blogRepository.save(Blog.create(newMember));
         return MemberResponseDto.of(newMember);
     }
     @Transactional(readOnly = true)

@@ -2,7 +2,6 @@ package com.openvelog.openvelogbe.common.entity;
 
 
 import com.openvelog.openvelogbe.blog.dto.BlogRequestDto;
-import com.openvelog.openvelogbe.member.dto.SignupRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,6 +35,12 @@ public class Blog extends Timestamped {
     public static Blog create(BlogRequestDto.BlogAdd dto, Member member) {
         return builder()
                 .introduce(dto.getIntroduce())
+                .member(member)
+                .build();
+    }
+
+    public static Blog create(Member member) {
+        return builder()
                 .member(member)
                 .build();
     }
