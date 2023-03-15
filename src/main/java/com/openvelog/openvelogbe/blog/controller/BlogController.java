@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +58,24 @@ public class BlogController {
     public ApiResponse<BlogResponseDto> getBlog(
             @PathVariable Long blogId) {
         return ApiResponse.successOf(HttpStatus.OK, blogService.getBlog(blogId));
+    }
+
+    @GetMapping("/viewCounts")
+    @SecurityRequirements()
+    @Operation(summary = "조회 수별 블로그 순위", description = "해당 블로그의 게시글의 조회 수가 높은대로 블로그 나열")
+    public ApiResponse<Page<BlogResponseDto>> getBlogsByViewCount(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.successOf(HttpStatus.OK, blogService.getBlogsByViewCount(page,size));
+    }
+
+    @GetMapping("/boardWishes")
+    @SecurityRequirements()
+    @Operation(summary = "좋아요 수별 블로그 순위", description = "해당 블로그의 게시글의 좋아요 수가 높은대로 블로그 나열")
+    public ApiResponse<Page<BlogResponseDto>> getBlogsByWishes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.successOf(HttpStatus.OK, blogService.getBlogsByWishes(page,size));
     }
 
 }

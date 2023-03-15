@@ -3,10 +3,7 @@ package com.openvelog.openvelogbe.common.entity;
 
 import com.openvelog.openvelogbe.blog.dto.BlogRequestDto;
 import com.openvelog.openvelogbe.member.dto.SignupRequestDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.LinkedHashSet;
