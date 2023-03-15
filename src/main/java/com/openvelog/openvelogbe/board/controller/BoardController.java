@@ -64,4 +64,15 @@ public class BoardController {
         boardService.deleteBoard(boardId,userDetails);
         return ApiResponse.successOf(HttpStatus.NO_CONTENT, null);
     }
+
+    @GetMapping("/byBlog")
+    @SecurityRequirements()
+    @Operation(summary = "블로그에 포함된 게시글 목록 조회", description = "page는 1번부터 시작")
+    public ApiResponse<List<BoardResponseDto>> getBoardListByBlog(
+            @RequestParam Long blogId,
+            @RequestParam Integer page,
+            @RequestParam Integer limit
+    ) {
+        return  ApiResponse.successOf(HttpStatus.OK, boardService.getBoardListByBlog(blogId, page, limit));
+    }
 }

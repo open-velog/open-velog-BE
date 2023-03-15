@@ -15,6 +15,8 @@ import com.openvelog.openvelogbe.common.repository.MemberRepository;
 import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
 import com.openvelog.openvelogbe.common.util.GetAgeRange;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -105,5 +107,12 @@ public class BoardService {
 
 
         return boards.stream().map(board -> BoardResponseDto.of(board, member)).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<BoardResponseDto> getBoardListByBlog(Long blogId, Integer page, Integer limit) {
+        Pageable pageable = PageRequest.of(page - 1, limit);
+
+        return boardRepository.findBoardsByBlogIdJPQL(blogId, pageable).stream().map(BoardResponseDto::of).collect(Collectors.toList());
     }
 }
