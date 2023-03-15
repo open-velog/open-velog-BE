@@ -1,6 +1,7 @@
 package com.openvelog.openvelogbe.common.repository;
 
 import com.openvelog.openvelogbe.common.entity.Board;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +25,10 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "wishes", "blog", "blog.member"
     })
     Optional<Board> findByIdJPQL(Long boardId);
+
+    @Query("select distinct b from boards b left join fetch b.wishes w where b.blog.id = :blogId")
+    @EntityGraph(attributePaths = {
+            "wishes"
+    })
+    List<Board> findBoardsByBlogIdJPQL(Long blogId, Pageable pageable);
 }
