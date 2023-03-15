@@ -96,13 +96,17 @@ public class BoardService {
     }
 
     @Transactional
-    public List<BoardResponseDto> searchBoards (String keyword, UserDetailsImpl userDetails){
+    public List<BoardResponseDto> searchBoards (String keyword, Integer page, Integer limit, UserDetailsImpl userDetails){
         Member member = userDetails != null ? userDetails.getUser() : null;
-        List<Board> boards = boardRepository.searchTitleOrContentOrBlogTitle(keyword);
-        GetAgeRange getAgeRange = new GetAgeRange();
 
+        Pageable pageable = PageRequest.of(page - 1, limit);
+
+        List<Board> boards = boardRepository.searchTitleOrContentOrBlogTitle(keyword, pageable);
+
+        GetAgeRange getAgeRange = new GetAgeRange();
         AgeRange ageRange = member != null ? getAgeRange.getAge(member) : null;
         Keyword newkeyword = new Keyword (keyword, member, ageRange);
+
         redisRepository.save(newkeyword);
 
 
