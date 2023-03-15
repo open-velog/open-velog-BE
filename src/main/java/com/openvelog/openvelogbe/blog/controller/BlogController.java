@@ -51,12 +51,12 @@ public class BlogController {
 
 
 
-    @GetMapping("/{blogId}")
+    @GetMapping("/{userId}")
     @SecurityRequirements()
     @Operation(summary = "블로그 조회", description = "블로그 조회")
     public ApiResponse<BlogResponseDto> getBlog(
-            @PathVariable Long blogId) {
-        return ApiResponse.successOf(HttpStatus.OK, blogService.getBlog(blogId));
+            @PathVariable Long userId) {
+        return ApiResponse.successOf(HttpStatus.OK, blogService.getBlog(userId));
     }
 
 }
