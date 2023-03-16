@@ -33,10 +33,9 @@ public abstract class DummyGenerator<E, R extends JpaRepository> {
         boolean isSucceeded = true;
 
         try {
-            System.out.println(((Member)generatedDummyEntity).getCreatedAt());
             repository.save(generatedDummyEntity);
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
-            log.error("Unique property got duplicated.");
+            log.error("Insertion fail.");
             isSucceeded = false;
         } catch (RuntimeException runtimeException) {
             runtimeException.printStackTrace();
@@ -58,11 +57,18 @@ public abstract class DummyGenerator<E, R extends JpaRepository> {
                 duplicationCount = 0;
             }
             else {
+                // 테스트 시, 과부하를 막기위한 코드
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
                 duplicationCount += 1;
             }
 
-            if (duplicationCount >= 3) {
-                throw new IllegalArgumentException("Too much duplication at one. Some setting might be wrong");
+            if (duplicationCount >= 10) {
+                throw new IllegalArgumentException("Too many insertion fails at once. Some setting might be wrong");
             }
         }
 
