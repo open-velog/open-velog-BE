@@ -66,5 +66,16 @@ public class BlogResponseDto {
         return builder.build();
     }
 
+    public static BlogResponseDto ofNoBoards(Blog blog) {
+        BlogResponseDtoBuilder builder = builder()
+                .id(blog.getId())
+                .introduce(blog.getIntroduce())
+                .member(MemberResponseDto.of(blog.getMember()))
+                .createdAt(blog.getCreatedAt())
+                .modifiedAt(blog.getModifiedAt());
+
+        return builder.build();
+    }
+
 }
 

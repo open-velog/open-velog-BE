@@ -34,9 +34,13 @@ public class BoardController {
 
 
     @GetMapping("/search")
-    @Operation(summary = "게시글 검색", description ="게시글 제목, 내용, 해당 블로그의 제목에 키워드가 포함된 게시글 목록 조회")
-    public ApiResponse<List<BoardResponseDto>> searchBoards(@RequestParam String keyword, @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return ApiResponse.successOf(HttpStatus.OK, boardService.searchBoards(keyword, userDetails));
+    @Operation(summary = "게시글 검색", description ="게시글 제목, 내용, 해당 블로그의 제목에 키워드가 포함된 게시글 목록 조회, page는 1부터 시작")
+    public ApiResponse<List<BoardResponseDto>> searchBoards(
+            @RequestParam String keyword,
+            @RequestParam Integer page,
+            @RequestParam Integer limit,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ApiResponse.successOf(HttpStatus.OK, boardService.searchBoards(keyword, page, limit, userDetails));
     }
 
     @GetMapping("/{boardId}")
@@ -63,5 +67,16 @@ public class BoardController {
             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
         boardService.deleteBoard(boardId,userDetails);
         return ApiResponse.successOf(HttpStatus.NO_CONTENT, null);
+    }
+
+    @GetMapping("/byBlog")
+    @SecurityRequirements()
+    @Operation(summary = "블로그에 포함된 게시글 목록 조회", description = "page는 1번부터 시작")
+    public ApiResponse<List<BoardResponseDto>> getBoardListByBlog(
+            @RequestParam Long blogId,
+            @RequestParam Integer page,
+            @RequestParam Integer limit
+    ) {
+        return  ApiResponse.successOf(HttpStatus.OK, boardService.getBoardListByBlog(blogId, page, limit));
     }
 }
