@@ -60,10 +60,9 @@ dependencies {
     // 배포용
     implementation 'mysql:mysql-connector-java:8.0.28'
 
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-redis'
     testImplementation 'org.projectlombok:lombok'
-    testImplementation 'com.opencsv:opencsv:5.4'
-    testImplementation 'dk.brics.automaton:automaton:1.12-1'
-    testImplementation 'com.github.mifmif:generex:1.0.2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
