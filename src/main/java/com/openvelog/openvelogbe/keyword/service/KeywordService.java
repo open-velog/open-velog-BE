@@ -7,7 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -31,5 +34,20 @@ public class KeywordService {
             list.add(KeyWordResponseDto.of(findkeyword));
         }
         return list;
+    }
+
+    public List<Map<String, Object>> keywordRanking(){
+        List<Map<String, Object>> result = redisRepository.findAll().stream()
+                .collect(Collectors.groupingBy(Keyword::getKeyword, Collectors.counting()))
+                .entrySet().stream()
+                .map(entry -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("keyword", entry.getKey());
+                    map.put("count", entry.getValue());
+                    return map;
+                })
+                .sorted((map1, map2) -> Long.compare((Long) map2.get("count"), (Long) map1.get("count")))
+                .collect(Collectors.toList());;
+        return result;
     }
 }
