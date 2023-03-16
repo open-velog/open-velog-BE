@@ -19,9 +19,9 @@ public abstract class DummyGenerator<E, R extends JpaRepository> {
         this.repository = repository;
     }
 
-    protected abstract E generateDummyEntityOfThis();
+    public abstract E generateDummyEntityOfThis();
 
-    protected boolean insertDummyIntoDatabase() {
+    public boolean insertDummyIntoDatabase() {
         E generatedDummyEntity = generateDummyEntityOfThis();
         boolean isSucceeded = true;
 
@@ -38,7 +38,7 @@ public abstract class DummyGenerator<E, R extends JpaRepository> {
         return isSucceeded;
     }
 
-    protected List<E> insertDummiesIntoDatabase(long dummyCount) {
+    public List<E> insertDummiesIntoDatabase(long dummyCount) {
         long dummyInserted = 0;
         while (dummyInserted < dummyCount) {
             dummyInserted += insertDummyIntoDatabase() ? 1 : 0;
