@@ -117,7 +117,5 @@ public class BoardService {
     public Page<BoardResponseDto> getBoardListByBlog(Long blogId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         return boardRepository.findBoardsByBlogIdJPQL(blogId, pageable).map(BoardResponseDto::of);
-
-//        return boardRepository.findBoardsByBlogIdJPQL(blogId, pageable).stream().map(BoardResponseDto::of).collect(Collectors.toList());
     }
 }

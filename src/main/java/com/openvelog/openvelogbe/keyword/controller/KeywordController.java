@@ -32,4 +32,11 @@ public class KeywordController {
     public ApiResponse getRedisDataByKeyword(@RequestParam String keyword) {
         return ApiResponse.successOf(HttpStatus.OK,keywordService.getKeywordsByKeyword(keyword));
     }
+
+    @GetMapping("/ranking")
+    @SecurityRequirements()
+    @Operation(summary = "24시간 내의 키워드 검색 순위", description ="24시간 내의 키워드 검색 순위")
+    public ApiResponse keywordRanking() {
+        return ApiResponse.successOf(HttpStatus.OK,keywordService.keywordRanking());
+    }
 }

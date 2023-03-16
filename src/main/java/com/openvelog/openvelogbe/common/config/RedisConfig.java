@@ -5,16 +5,24 @@ package com.openvelog.openvelogbe.common.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.RedisKeyValueAdapter;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.PatternTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.util.List;
+import java.util.Map;
+
 @Configuration
-@EnableRedisRepositories
+@EnableRedisRepositories(enableKeyspaceEvents = RedisKeyValueAdapter.EnableKeyspaceEvents.ON_STARTUP)
 public class RedisConfig {
 
     @Value("${spring.redis.host}")
@@ -34,30 +42,41 @@ public class RedisConfig {
         return lettuceConnectionFactory;
     }
 
-    //lettuce 사용시 해당 빈을 사용
-    //string <-> string
-    /*@Bean
+    @Bean
     public RedisTemplate<String, String> redisTemplate() {
         RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
-        redisTemplate.setKeySerializer(new StringRedisSerializer());//key 깨짐 방지
-        redisTemplate.setValueSerializer(new StringRedisSerializer());//value 깨짐 방지
-        return redisTemplate;
-    }*/
-
-    //String <-> Object
-    /*@Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory){
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory);
         redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
         return redisTemplate;
-    }*/
-    @Bean
-    public RedisTemplate<?, ?> redisTemplate() {
-        RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        return redisTemplate;
+    }
+
+//    @Bean
+    RedisMessageListenerContainer keyExpirationListenerContainer() {
+
+        RedisMessageListenerContainer listenerContainer = new RedisMessageListenerContainer();
+        listenerContainer.setConnectionFactory(redisConnectionFactory());
+
+        listenerContainer.addMessageListener((message, pattern) -> {
+
+            String expiredKey = message.toString();
+
+//            if (Boolean.FALSE.equals(redisTemplate().hasKey(expiredKey))) {
+//                throw new RuntimeException("Key does not exist in Redis");
+//            }
+//            if (redisTemplate().type(expiredKey) != DataType.HASH) {
+//                throw new RuntimeException("Key is not a Hash type");
+//            }
+
+            List<String> expiredValue = redisTemplate().<String, String>opsForHash().values(expiredKey);
+
+            System.out.println(expiredKey);
+            System.out.println(expiredValue);
+            // event handling comes here
+            redisTemplate().opsForZSet().incrementScore("keywords", "send", 1);
+
+        }, new PatternTopic("__keyevent@*__:expired"));
+
+        return listenerContainer;
     }
 }
