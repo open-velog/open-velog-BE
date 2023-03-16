@@ -8,6 +8,8 @@ import com.openvelog.openvelogbe.crawling.entity.CrawledBoard;
 import com.openvelog.openvelogbe.crawling.repository.CrawledBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -33,7 +35,7 @@ public class BoardDummyGenerator extends DummyGenerator<Board, BoardRepository> 
         super(repository);
         this.crawledBoardRepository = crawledBoardRepository;
         this.blogRepository = blogRepository;
-        this.crawledBoards = crawledBoardRepository.findAllWithLimit(10000);
+        this.crawledBoards = crawledBoardRepository.findAll(PageRequest.of(0, 1000, Sort.unsorted())).getContent();
         this.blogs = blogRepository.findAll();
     }
 
