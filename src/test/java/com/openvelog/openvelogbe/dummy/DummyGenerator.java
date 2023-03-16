@@ -1,6 +1,7 @@
 package com.openvelog.openvelogbe.dummy;
 
 import com.openvelog.openvelogbe.common.GlobalExceptionHandler;
+import com.openvelog.openvelogbe.common.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ public abstract class DummyGenerator<E, R extends JpaRepository> {
         boolean isSucceeded = true;
 
         try {
+            System.out.println(((Member)generatedDummyEntity).getCreatedAt());
             repository.save(generatedDummyEntity);
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
             log.error("Unique property got duplicated.");
@@ -46,10 +48,20 @@ public abstract class DummyGenerator<E, R extends JpaRepository> {
 
     public List<E> insertDummiesIntoDatabase(long dummyCount) {
         long dummyInserted = 0;
+        long duplicationCount = 0;
 
         while (dummyInserted < dummyCount) {
-            dummyInserted = insertDummyIntoDatabase() ? dummyInserted + 1 : 0;
-            if (dummyInserted >= 10) {
+            boolean isInsertionSucceeded = insertDummyIntoDatabase();
+
+            if (isInsertionSucceeded) {
+                dummyInserted += 1;
+                duplicationCount = 0;
+            }
+            else {
+                duplicationCount += 1;
+            }
+
+            if (duplicationCount >= 3) {
                 throw new IllegalArgumentException("Too much duplication at one. Some setting might be wrong");
             }
         }

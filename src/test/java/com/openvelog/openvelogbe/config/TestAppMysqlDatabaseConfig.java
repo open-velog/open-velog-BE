@@ -1,7 +1,10 @@
 package com.openvelog.openvelogbe.config;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -24,16 +27,33 @@ import java.util.Map;
         transactionManagerRef = "testAppMysqlTransactionManager"
 )
 public class TestAppMysqlDatabaseConfig {
+    @Value("${test-app.datasource.driver}")
+    private String driverClassName;
+
+    @Value("${test-app.datasource.url}")
+    private String url;
+
+    @Value("${test-app.datasource.username}")
+    private String username;
+
+    @Value("${test-app.datasource.password}")
+    private String password;
+
     @Bean
-    @ConfigurationProperties("test-app.datasource")
-    public DataSource TestAppMysqlDataSource() {
-        return DataSourceBuilder.create().build();
+    public DataSource testAppMysqlDataSource() {
+        DataSourceProperties dataSourceProperties = new DataSourceProperties();
+        dataSourceProperties.setDriverClassName(driverClassName);
+        dataSourceProperties.setUrl(url);
+        dataSourceProperties.setUsername(username);
+        dataSourceProperties.setPassword(password);
+
+        return dataSourceProperties.initializeDataSourceBuilder().build();
     }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean testAppEntityManagerFactory() {
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-        factory.setDataSource(TestAppMysqlDataSource());
+        factory.setDataSource(testAppMysqlDataSource());
         factory.setPackagesToScan("com.openvelog.openvelogbe.common.entity", "com.openvelog.openvelogbe.common.repository");
         factory.setPersistenceUnitName("testApp");
 
@@ -44,6 +64,7 @@ public class TestAppMysqlDatabaseConfig {
         // Set JPA properties from the injected JpaProperties bean
         Map<String, Object> jpaProperties = new HashMap<>();
         jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+        jpaProperties.put("hibernate.physical_naming_strategy", SpringPhysicalNamingStrategy.class.getName());
         factory.setJpaPropertyMap(jpaProperties);
 
         return factory;

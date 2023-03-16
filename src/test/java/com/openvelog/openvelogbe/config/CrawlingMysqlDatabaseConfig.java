@@ -1,6 +1,8 @@
 package com.openvelog.openvelogbe.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -25,10 +27,27 @@ import java.util.Map;
         transactionManagerRef = "crawlingMysqlTransactionManager"
 )
 public class CrawlingMysqlDatabaseConfig {
+    @Value("${crawling.datasource.driver}")
+    private String driverClassName;
+
+    @Value("${crawling.datasource.url}")
+    private String url;
+
+    @Value("${crawling.datasource.username}")
+    private String username;
+
+    @Value("${crawling.datasource.password}")
+    private String password;
+
     @Bean
-    @ConfigurationProperties("crawling.datasource")
     public DataSource CrawlingMysqlDataSource() {
-        return DataSourceBuilder.create().build();
+        DataSourceProperties dataSourceProperties = new DataSourceProperties();
+        dataSourceProperties.setDriverClassName(driverClassName);
+        dataSourceProperties.setUrl(url);
+        dataSourceProperties.setUsername(username);
+        dataSourceProperties.setPassword(password);
+
+        return dataSourceProperties.initializeDataSourceBuilder().build();
     }
 
     @Bean

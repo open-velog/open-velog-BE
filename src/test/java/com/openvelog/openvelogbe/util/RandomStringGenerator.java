@@ -22,8 +22,8 @@ public class RandomStringGenerator {
     }
 
     public static String generateMemberPassword() {
-        // Generate a random string with at least one letter, one digit, and a length of at least 8, containing special characters
-        return generateRandomString(8, Integer.MAX_VALUE, UPPERCASE_LETTERS + LOWERCASE_LETTERS + DIGITS + SPECIAL_CHARACTERS, 1, 0, 1);
+        // Generate a random string with at least one letter, one digit, and a length between 8 and 30, containing special characters
+        return generateRandomString(8, 30, UPPERCASE_LETTERS + LOWERCASE_LETTERS + DIGITS + SPECIAL_CHARACTERS, 1, 0, 1);
     }
 
     public static String generateMemberEmail() {
