@@ -4,10 +4,8 @@ import com.openvelog.openvelogbe.blog.dto.BlogRequestDto;
 import com.openvelog.openvelogbe.blog.dto.BlogResponseDto;
 import com.openvelog.openvelogbe.common.dto.ErrorMessage;
 import com.openvelog.openvelogbe.common.entity.Blog;
-import com.openvelog.openvelogbe.common.entity.Board;
 import com.openvelog.openvelogbe.common.entity.Member;
 import com.openvelog.openvelogbe.common.repository.BlogRepository;
-import com.openvelog.openvelogbe.common.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.security.access.AccessDeniedException;
@@ -15,11 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.constraints.Min;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +28,7 @@ public class BlogService {
 
         Blog blog = Blog.create(dto, member);
 
-        return BlogResponseDto.of(blogRepository.save(blog));
+        return BlogResponseDto.ofNoBoards(blogRepository.save(blog));
     }
 
     @Transactional
@@ -50,7 +43,7 @@ public class BlogService {
 
         blog.update(dto);
 
-        return BlogResponseDto.of(blog);
+        return BlogResponseDto.ofNoBoards(blog);
     }
 
     @Transactional
@@ -69,26 +62,26 @@ public class BlogService {
 
     @Transactional(readOnly = true)
     public BlogResponseDto getBlog(String blogId) {
-        Blog blog = blogRepository.findByUserIdJPQL(blogId).orElseThrow(
+        Object[] objects = blogRepository.findByUserIdJPQL(blogId).stream().findFirst().orElseThrow(
                 () -> new EntityNotFoundException(ErrorMessage.NO_BLOG.getMessage())
         );
 
-        return BlogResponseDto.ofNoBoards(blog);
+        return BlogResponseDto.of((Blog)objects[0], (Long)objects[1], (Long)objects[2]);
     }
 
     @Transactional(readOnly = true)
     public Page<BlogResponseDto> getBlogsByViewCount(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "viewCountSum"));
-        Page<Object[]> blogPage = blogRepository.findAllOrderByBoardsViewCountDesc(pageRequest);
-        return blogPage.map(objects -> BlogResponseDto.of((Blog)objects[0]));
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "viewCountSum", "bb.createdAt"));
+        Page<Object[]> blogPage = blogRepository.findAllOrderByBoardsCountedDesc(pageRequest);
+        return blogPage.map(objects -> BlogResponseDto.of((Blog)objects[0], (Long)objects[1], (Long)objects[2]));
     }
 
 
     @Transactional(readOnly = true)
     public Page<BlogResponseDto> getBlogsByWishes(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "wishesSize"));
-        Page<Object[]> blogPage = blogRepository.findAllOrderByWish(pageRequest);
-        return blogPage.map(objects -> BlogResponseDto.of((Blog)objects[0]));
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "wishCountSum", "bb.createdAt"));
+        Page<Object[]> blogPage = blogRepository.findAllOrderByBoardsCountedDesc(pageRequest);
+        return blogPage.map(objects -> BlogResponseDto.of((Blog)objects[0], (Long)objects[1], (Long)objects[2]));
     }
 
 }
