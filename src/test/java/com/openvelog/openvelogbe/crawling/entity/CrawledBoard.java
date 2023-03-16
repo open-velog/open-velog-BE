@@ -30,10 +30,10 @@ public class CrawledBoard {
     private String content;
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column
+    @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
 }
