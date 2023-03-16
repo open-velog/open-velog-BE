@@ -5,6 +5,7 @@ import com.openvelog.openvelogbe.common.repository.KeywordRedisRepository;
 import com.openvelog.openvelogbe.keyword.dto.KeyWordResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ public class KeywordService {
 
     private final KeywordRedisRepository redisRepository;
 
+    @Transactional(readOnly = true)
     public List<KeyWordResponseDto> getKeywords(){
         List<Keyword> keywords = redisRepository.findAll();
         List<KeyWordResponseDto>list = new ArrayList<>();
@@ -23,7 +25,7 @@ public class KeywordService {
         }
         return list;
     }
-
+    @Transactional(readOnly = true)
     public List<KeyWordResponseDto> getKeywordsByKeyword(String keyword){
         List<Keyword> keywords = redisRepository.findByKeyword(keyword);
         List<KeyWordResponseDto> list = new ArrayList<>();
@@ -32,4 +34,5 @@ public class KeywordService {
         }
         return list;
     }
+
 }
