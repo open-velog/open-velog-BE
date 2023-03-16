@@ -60,8 +60,8 @@ public class BlogService {
     }
 
     @Transactional(readOnly = true)
-    public BlogResponseDto getBlog(Long blogId) {
-        Blog blog = blogRepository.findByMemberIdJPQL(blogId).orElseThrow(
+    public BlogResponseDto getBlog(String blogId) {
+        Blog blog = blogRepository.findByUserIdJPQL(blogId).orElseThrow(
                 () -> new EntityNotFoundException(ErrorMessage.NO_BLOG.getMessage())
         );
 
