@@ -11,7 +11,6 @@ import com.openvelog.openvelogbe.common.entity.enums.AgeRange;
 import com.openvelog.openvelogbe.common.repository.BlogRepository;
 import com.openvelog.openvelogbe.common.repository.BoardRepository;
 import com.openvelog.openvelogbe.common.repository.KeywordRedisRepository;
-import com.openvelog.openvelogbe.common.repository.MemberRepository;
 import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
 import com.openvelog.openvelogbe.common.util.GetAgeRange;
 import lombok.RequiredArgsConstructor;
@@ -100,8 +99,7 @@ public class BoardService {
         Member member = userDetails != null ? userDetails.getUser() : null;
 
         Pageable pageable = PageRequest.of(page - 1, limit);
-
-        List<Board> boards = boardRepository.searchTitleOrContentOrBlogTitle(keyword, pageable);
+        List<Board> boards = boardRepository.searchTitleOrContentOrBlogTitle(keyword + "*", pageable);
 
         GetAgeRange getAgeRange = new GetAgeRange();
         AgeRange ageRange = member != null ? getAgeRange.getAge(member) : null;
