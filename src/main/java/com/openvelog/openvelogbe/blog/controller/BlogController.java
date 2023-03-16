@@ -56,7 +56,7 @@ public class BlogController {
     @SecurityRequirements()
     @Operation(summary = "블로그 조회", description = "블로그 조회")
     public ApiResponse<BlogResponseDto> getBlog(
-            @PathVariable Long userId) {
+            @PathVariable String userId) {
         return ApiResponse.successOf(HttpStatus.OK, blogService.getBlog(userId));
     }
 
