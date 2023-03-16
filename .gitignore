@@ -36,9 +36,10 @@ out/
 ### VS Code ###
 .vscode/
 
-### database ###
+### data files ###
+/csv-files
 /data
 
-### secret values ###
-**/application-dev.properties
-/files
+### properties ###
+*.properties
+!application.properties
