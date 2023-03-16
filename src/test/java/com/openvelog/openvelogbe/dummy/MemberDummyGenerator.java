@@ -42,7 +42,7 @@ public class MemberDummyGenerator extends DummyGenerator<Member, MemberRepositor
 
     @Override
     public Member generateDummyEntityOfThis() {
-        Member randomMember = Member.builder()
+        Member dummyMember = Member.builder()
                 .userId(memberIdGenerex.random())
                 .username(memberNameGenerex.random())
                 .password(memberPasswordGenerex.random())
@@ -51,6 +51,6 @@ public class MemberDummyGenerator extends DummyGenerator<Member, MemberRepositor
                 .birthday(localDateDummyGenerator.generateRandomLocalDateFromTo(lowerBoundBirthday, upperBoundBirthday))
                 .build();
 
-        return randomMember;
+        return dummyMember;
     }
 }
