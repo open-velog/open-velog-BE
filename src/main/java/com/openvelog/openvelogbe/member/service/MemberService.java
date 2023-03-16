@@ -6,6 +6,7 @@ import com.openvelog.openvelogbe.common.entity.Member;
 import com.openvelog.openvelogbe.common.jwt.JwtUtil;
 import com.openvelog.openvelogbe.common.repository.BlogRepository;
 import com.openvelog.openvelogbe.common.repository.MemberRepository;
+import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
 import com.openvelog.openvelogbe.member.dto.LoginRequestDto;
 import com.openvelog.openvelogbe.member.dto.MemberResponseDto;
 import com.openvelog.openvelogbe.member.dto.SignupRequestDto;
@@ -62,5 +63,10 @@ public class MemberService {
 
     public Boolean checkUserId(String userId) {
         return memberRepository.findByUserId(userId).isPresent();
+    }
+
+
+    public MemberResponseDto getUserByToken(UserDetailsImpl userDetails) {
+        return MemberResponseDto.of(userDetails.getUser());
     }
 }

@@ -1,6 +1,7 @@
 package com.openvelog.openvelogbe.member.controller;
 
 import com.openvelog.openvelogbe.common.dto.ApiResponse;
+import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
 import com.openvelog.openvelogbe.member.dto.LoginRequestDto;
 import com.openvelog.openvelogbe.member.dto.MemberResponseDto;
 import com.openvelog.openvelogbe.member.dto.SignupRequestDto;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -47,4 +49,11 @@ public class MemberController {
         return ApiResponse.successOf(HttpStatus.OK, memberService.checkUserId(userId));
     }
 
+    @GetMapping
+    @Operation(summary = "토큰으로 member정보 조회", description = "토큰으로 member정보 조회")
+    public ApiResponse<MemberResponseDto> getUserByToken(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        return ApiResponse.successOf(HttpStatus.OK, memberService.getUserByToken(userDetails));
+    }
 }
