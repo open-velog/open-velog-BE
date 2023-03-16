@@ -15,6 +15,7 @@ import com.openvelog.openvelogbe.common.repository.MemberRepository;
 import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
 import com.openvelog.openvelogbe.common.util.GetAgeRange;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -96,12 +97,12 @@ public class BoardService {
     }
 
     @Transactional
-    public List<BoardResponseDto> searchBoards (String keyword, Integer page, Integer limit, UserDetailsImpl userDetails){
+    public Page<BoardResponseDto> searchBoards (String keyword, Integer page, Integer size, UserDetailsImpl userDetails){
         Member member = userDetails != null ? userDetails.getUser() : null;
 
-        Pageable pageable = PageRequest.of(page - 1, limit);
+        Pageable pageable = PageRequest.of(page - 1, size);
 
-        List<Board> boards = boardRepository.searchTitleOrContentOrBlogTitle(keyword, pageable);
+        Page<Board> boards = boardRepository.searchTitleOrContentOrBlogTitle(keyword, pageable);
 
         GetAgeRange getAgeRange = new GetAgeRange();
         AgeRange ageRange = member != null ? getAgeRange.getAge(member) : null;
@@ -109,14 +110,14 @@ public class BoardService {
 
         redisRepository.save(newkeyword);
 
-
-        return boards.stream().map(board -> BoardResponseDto.of(board, member)).collect(Collectors.toList());
+        return boards.map(board -> BoardResponseDto.of(board, member));
     }
 
     @Transactional(readOnly = true)
-    public List<BoardResponseDto> getBoardListByBlog(Long blogId, Integer page, Integer limit) {
-        Pageable pageable = PageRequest.of(page - 1, limit);
+    public Page<BoardResponseDto> getBoardListByBlog(Long blogId, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return boardRepository.findBoardsByBlogIdJPQL(blogId, pageable).map(BoardResponseDto::of);
 
-        return boardRepository.findBoardsByBlogIdJPQL(blogId, pageable).stream().map(BoardResponseDto::of).collect(Collectors.toList());
+//        return boardRepository.findBoardsByBlogIdJPQL(blogId, pageable).stream().map(BoardResponseDto::of).collect(Collectors.toList());
     }
 }
