@@ -62,18 +62,18 @@ public class BlogController {
 
     @GetMapping("/viewCounts")
     @SecurityRequirements()
-    @Operation(summary = "조회 수별 블로그 순위", description = "해당 블로그의 게시글의 조회 수가 높은대로 블로그 나열")
+    @Operation(summary = "조회 수별 블로그 순위", description = "해당 블로그의 게시글의 조회 수가 높은대로 블로그 나열 page는 1번부터 시작")
     public ApiResponse<Page<BlogResponseDto>> getBlogsByViewCount(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         return ApiResponse.successOf(HttpStatus.OK, blogService.getBlogsByViewCount(page,size));
     }
 
     @GetMapping("/boardWishes")
     @SecurityRequirements()
-    @Operation(summary = "좋아요 수별 블로그 순위", description = "해당 블로그의 게시글의 좋아요 수가 높은대로 블로그 나열")
+    @Operation(summary = "좋아요 수별 블로그 순위", description = "해당 블로그의 게시글의 좋아요 수가 높은대로 블로그 나열 page는 1번부터 시작")
     public ApiResponse<Page<BlogResponseDto>> getBlogsByWishes(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         return ApiResponse.successOf(HttpStatus.OK, blogService.getBlogsByWishes(page,size));
     }
