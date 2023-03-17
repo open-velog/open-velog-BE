@@ -27,6 +27,9 @@ import java.util.Map;
         transactionManagerRef = "crawlingMysqlTransactionManager"
 )
 public class CrawlingMysqlDatabaseConfig {
+    @Value("#{${crawling.jpa}}")
+    private Map<String, String> jpaPropertiesMap;
+
     @Value("${crawling.datasource.driver}")
     private String driverClassName;
 
@@ -62,9 +65,7 @@ public class CrawlingMysqlDatabaseConfig {
         factory.setJpaVendorAdapter(vendorAdapter);
 
         // Set JPA properties from the injected JpaProperties bean
-        Map<String, Object> jpaProperties = new HashMap<>();
-        jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-        factory.setJpaPropertyMap(jpaProperties);
+        factory.setJpaPropertyMap(jpaPropertiesMap);
 
         return factory;
     }
