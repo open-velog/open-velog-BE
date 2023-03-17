@@ -1,5 +1,6 @@
 package com.openvelog.openvelogbe.blog.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.openvelog.openvelogbe.board.dto.BoardResponseDto;
 import com.openvelog.openvelogbe.common.entity.Blog;
 import com.openvelog.openvelogbe.common.entity.Board;
@@ -32,17 +33,26 @@ public class BlogResponseDto {
     @Schema(example = "블로그 주인")
     private String memberUserId;
 
+    @Schema(example = "블로그 주인")
+    private String memberUsername;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(example = "블로그의 게시글들의 총 조회 수")
     private Long viewCountSum;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(example = "블로그의 게시글들의 총 좋아요 수")
     private Long wishCountSum;
+
     private LocalDateTime createdAt;
+
     private LocalDateTime modifiedAt;
 
     public static BlogResponseDto of(Blog blog, Long viewCountSum, Long wishCountSum) {
         BlogResponseDtoBuilder builder = builder()
                 .id(blog.getId())
                 .memberUserId(blog.getMember().getUserId())
+                .memberUsername(blog.getMember().getUsername())
                 .introduce(blog.getIntroduce())
                 .viewCountSum(ObjectUtils.defaultIfNull(viewCountSum, 0L))
                 .wishCountSum(ObjectUtils.defaultIfNull(wishCountSum, 0L))
