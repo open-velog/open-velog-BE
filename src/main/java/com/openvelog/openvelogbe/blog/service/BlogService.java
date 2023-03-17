@@ -61,8 +61,8 @@ public class BlogService {
     }
 
     @Transactional(readOnly = true)
-    public BlogResponseDto getBlog(String blogId) {
-        Object[] objects = blogRepository.findByUserIdJPQL(blogId).stream().findFirst().orElseThrow(
+    public BlogResponseDto getBlog(String userId) {
+        Object[] objects = blogRepository.findByUserIdJPQL(userId).stream().findFirst().orElseThrow(
                 () -> new EntityNotFoundException(ErrorMessage.NO_BLOG.getMessage())
         );
 
