@@ -4,6 +4,8 @@ package com.openvelog.openvelogbe.common.entity;
 import com.openvelog.openvelogbe.common.entity.enums.AgeRange;
 import com.openvelog.openvelogbe.common.entity.enums.Gender;
 import com.openvelog.openvelogbe.common.entity.enums.ValidEnum;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.UniqueElements;
@@ -19,8 +21,9 @@ import java.time.LocalDateTime;
                 @UniqueConstraint(columnNames = {"keyword", "gender", "ageRange", "searchedDate"})
         }
 )
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
-@UniqueElements()
 public class KeywordRecord extends Timestamped {
 
     @Id
@@ -43,5 +46,16 @@ public class KeywordRecord extends Timestamped {
 
     @Column(nullable = false)
     private LocalDate searchedDate;
+
+    public static KeywordRecord create(String keyword, Long count, Gender gender,
+                                             AgeRange ageRange, LocalDate createdAt) {
+        return KeywordRecord.builder()
+                .keyword(keyword)
+                .count(count)
+                .gender(gender)
+                .ageRange(ageRange)
+                .searchedDate(createdAt)
+                .build();
+    }
 
 }

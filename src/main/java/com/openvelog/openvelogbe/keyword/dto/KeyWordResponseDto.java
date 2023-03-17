@@ -26,13 +26,6 @@ public class KeyWordResponseDto {
     @Schema(type = "LocalDate", example = "검색된 시점 연,월,일")
     private LocalDate createdAt;
 
-    /*public static ResponseRankingDto convertToResponseRankingDto(ZSetOperations.TypedTuple typedTuple){
-        ResponseRankingDtoBuilder builder = builder()
-                .keyword(typedTuple.getValue().toString())
-                .score(typedTuple.getScore().intValue());
-        return builder.build();
-    }*/
-
     public static KeyWordResponseDto of (Keyword keyword){
         KeyWordResponseDtoBuilder builder = builder()
                 .keyword(keyword.getKeyword())
