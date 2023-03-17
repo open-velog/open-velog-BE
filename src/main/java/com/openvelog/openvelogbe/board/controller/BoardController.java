@@ -16,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Tag(name = "Board")
 @RestController
@@ -79,5 +78,27 @@ public class BoardController {
             @RequestParam(defaultValue = "10") Integer size
     ) {
         return  ApiResponse.successOf(HttpStatus.OK, boardService.getBoardListByBlog(blogId, page, size));
+    }
+
+    @GetMapping("/byBlog/userId")
+    @SecurityRequirements()
+    @Operation(summary = "블로그에 포함된 게시글 목록 조회", description = "page는 1번부터 시작")
+    public ApiResponse<Page<BoardResponseDto>> getBoardListByBlogUserId(
+            @RequestParam String userId,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
+    ) {
+        return  ApiResponse.successOf(HttpStatus.OK, boardService.getBoardListByBlogUserId(userId, page, size));
+    }
+
+    @GetMapping("/byBlog/memberId")
+    @SecurityRequirements()
+    @Operation(summary = "블로그에 포함된 게시글 목록 조회", description = "page는 1번부터 시작")
+    public ApiResponse<Page<BoardResponseDto>> getBoardListByBlogMemberId(
+            @RequestParam Long memberId,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
+    ) {
+        return  ApiResponse.successOf(HttpStatus.OK, boardService.getBoardListByBlogMemberId(memberId, page, size));
     }
 }
