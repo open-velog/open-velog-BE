@@ -27,6 +27,9 @@ import java.util.Map;
         transactionManagerRef = "testAppMysqlTransactionManager"
 )
 public class TestAppMysqlDatabaseConfig {
+    @Value("#{${test-app.jpa}}")
+    private Map<String, String> jpaPropertiesMap;
+
     @Value("${test-app.datasource.driver}")
     private String driverClassName;
 
@@ -62,10 +65,7 @@ public class TestAppMysqlDatabaseConfig {
         factory.setJpaVendorAdapter(vendorAdapter);
 
         // Set JPA properties from the injected JpaProperties bean
-        Map<String, Object> jpaProperties = new HashMap<>();
-        jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-        jpaProperties.put("hibernate.physical_naming_strategy", SpringPhysicalNamingStrategy.class.getName());
-        factory.setJpaPropertyMap(jpaProperties);
+        factory.setJpaPropertyMap(jpaPropertiesMap);
 
         return factory;
     }

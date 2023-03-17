@@ -16,10 +16,10 @@ import java.time.LocalDateTime;
 public class Timestamped {
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "modified_at")
+    @Column
     private LocalDateTime modifiedAt;
 }
