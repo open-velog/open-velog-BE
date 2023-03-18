@@ -41,8 +41,8 @@ public class MemberService {
 
         Member newMember = Member.create(signupRequestDto, encodedPassword);
         memberRepository.save(newMember);
-        blogRepository.save(Blog.create(newMember));
-        return MemberResponseDto.of(newMember);
+        Blog blog = blogRepository.save(Blog.create(newMember));
+        return MemberResponseDto.ofHasBlog(newMember, blog.getId());
     }
     @Transactional(readOnly = true)
     public MemberResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
@@ -58,7 +58,8 @@ public class MemberService {
         }
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getUserId()));
-        return MemberResponseDto.of(member);
+        Long blogId = member.getBlog() != null ? member.getBlog().getId() : null;
+        return MemberResponseDto.ofHasBlog(member, blogId);
     }
 
     public Boolean checkUserId(String userId) {
@@ -67,6 +68,12 @@ public class MemberService {
 
 
     public MemberResponseDto getUserByToken(UserDetailsImpl userDetails) {
-        return MemberResponseDto.of(userDetails.getUser());
+        Member member = userDetails.getUser();
+        Optional<Blog> blog = blogRepository.findByMemberId(member.getId());
+        Long blogId = null;
+        if (blog.isPresent()) {
+            blogId = blog.get().getId();
+        }
+        return MemberResponseDto.ofHasBlog(member, blogId);
     }
 }
