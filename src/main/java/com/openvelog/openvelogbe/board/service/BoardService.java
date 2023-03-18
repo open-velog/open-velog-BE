@@ -93,7 +93,7 @@ public class BoardService {
         boardRepository.deleteById(board.getId());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<BoardResponseDto> searchBoards (String keyword, Integer page, Integer size, UserDetailsImpl userDetails){
         Member member = userDetails != null ? userDetails.getUser() : null;
 
