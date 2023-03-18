@@ -45,7 +45,7 @@ public abstract class DummyGenerator<E, R extends JpaRepository> {
         return isSucceeded;
     }
 
-    public List<E> insertDummiesIntoDatabase(long dummyCount) {
+    public boolean insertDummiesIntoDatabase(long dummyCount) {
         long dummyInserted = 0;
         long duplicationCount = 0;
 
@@ -72,6 +72,10 @@ public abstract class DummyGenerator<E, R extends JpaRepository> {
             }
         }
 
-        return  repository.findAll();
+        return true;
+    }
+
+    public boolean customizedInsertDummiesIntoDatabase() {
+        return true;
     }
 }
