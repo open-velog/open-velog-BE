@@ -21,7 +21,9 @@ import java.util.List;
 @Slf4j
 public class BoardDummyGenerator extends DummyGenerator<Board, BoardRepository> {
 
-    private int BATCH_SIZE = 1000;
+    private final int MAX_VIEW_COUNT = 1000000;
+
+    private final int BATCH_SIZE = 1000;
 
     private BlogRepository blogRepository;
 
@@ -53,7 +55,7 @@ public class BoardDummyGenerator extends DummyGenerator<Board, BoardRepository> 
                 .title(randomlySelectedCrawledBoard.getTitle())
                 .content(randomlySelectedCrawledBoard.getContent())
                 .blog(randomlySelectedBlog)
-                .viewCount(0L)
+                .viewCount((long)MAX_VIEW_COUNT)
                 .build();
 
         return dummyBoard;
@@ -61,7 +63,6 @@ public class BoardDummyGenerator extends DummyGenerator<Board, BoardRepository> 
 
     @Override
     public boolean customizedInsertDummiesIntoDatabase() {
-        Blog randomlySelectedBlog = this.blogs.get(random.nextInt(blogs.size()));
         List<Board> batchDummyBoards = new ArrayList<>(BATCH_SIZE);
 
         int page = 820;
@@ -77,8 +78,8 @@ public class BoardDummyGenerator extends DummyGenerator<Board, BoardRepository> 
                 Board dummyBoard = Board.builder()
                         .title(crawledBoard.getTitle())
                         .content(crawledBoard.getContent())
-                        .blog(randomlySelectedBlog)
-                        .viewCount(0L)
+                        .blog(this.blogs.get(random.nextInt(blogs.size())))
+                        .viewCount((long)random.nextInt(MAX_VIEW_COUNT))
                         .wishes(null)
                         .build();
                 batchDummyBoards.add(dummyBoard);
@@ -94,6 +95,10 @@ public class BoardDummyGenerator extends DummyGenerator<Board, BoardRepository> 
             System.out.println("total " + totalInserted + " inserted. page : " + page);
         }
 
+        return true;
+    }
+
+    boolean updateBoardId() {
         return true;
     }
 }
