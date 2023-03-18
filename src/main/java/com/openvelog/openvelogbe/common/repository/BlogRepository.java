@@ -45,5 +45,4 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
             "member", "boards","boards.wishes"
     })
     Page<Object[]> findAllOrderByBoardsCountedDesc(Pageable pageable);
-
 }
