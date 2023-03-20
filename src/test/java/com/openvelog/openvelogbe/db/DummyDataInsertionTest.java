@@ -1,8 +1,8 @@
 package com.openvelog.openvelogbe.db;
 
-import com.openvelog.openvelogbe.dummy.BlogDummyGenerator;
 import com.openvelog.openvelogbe.dummy.BoardDummyGenerator;
 import com.openvelog.openvelogbe.dummy.MemberDummyGenerator;
+import com.openvelog.openvelogbe.dummy.WishDummyGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,19 +17,19 @@ public class DummyDataInsertionTest {
 
     private MemberDummyGenerator memberDummyGenerator;
 
-    private BlogDummyGenerator blogDummyGenerator;
-
     private BoardDummyGenerator boardDummyGenerator;
+
+    private WishDummyGenerator wishDummyGenerator;
 
     @Autowired
     DummyDataInsertionTest(
             MemberDummyGenerator memberDummyGenerator,
-            BlogDummyGenerator blogDummyGenerator,
-            BoardDummyGenerator boardDummyGenerator
+            BoardDummyGenerator boardDummyGenerator,
+            WishDummyGenerator wishDummyGenerator
     ) {
         this.memberDummyGenerator = memberDummyGenerator;
-        this.blogDummyGenerator = blogDummyGenerator;
         this.boardDummyGenerator = boardDummyGenerator;
+        this.wishDummyGenerator = wishDummyGenerator;
     }
 
     @Test
@@ -38,12 +38,13 @@ public class DummyDataInsertionTest {
     }
 
     @Test
-    void insertDummyBlogs() {
-        assertTrue(blogDummyGenerator.insertDummiesIntoDatabase(100));
+    void insertDummyBoards() {
+        assertTrue(boardDummyGenerator.insertDummiesIntoDatabase(10000));
     }
 
     @Test
-    void insertDummyBoards() {
-        assertTrue(boardDummyGenerator.customizedInsertDummiesIntoDatabase());
+    void insertDummyWishes() throws InterruptedException {
+        assertTrue(wishDummyGenerator.insertDummiesIntoDatabase(9800));
     }
+
 }

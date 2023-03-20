@@ -20,7 +20,6 @@ import java.util.Set;
 @NoArgsConstructor
 public class Member extends Timestamped {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

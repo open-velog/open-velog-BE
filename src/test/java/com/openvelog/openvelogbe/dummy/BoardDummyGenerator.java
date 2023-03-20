@@ -62,7 +62,7 @@ public class BoardDummyGenerator extends DummyGenerator<Board, BoardRepository> 
     }
 
     @Override
-    public boolean customizedInsertDummiesIntoDatabase() {
+    public boolean insertDummiesIntoDatabase(int dummyCount) {
         List<Board> batchDummyBoards = new ArrayList<>(BATCH_SIZE);
 
         int page = 820;
@@ -98,7 +98,4 @@ public class BoardDummyGenerator extends DummyGenerator<Board, BoardRepository> 
         return true;
     }
 
-    boolean updateBoardId() {
-        return true;
-    }
 }
