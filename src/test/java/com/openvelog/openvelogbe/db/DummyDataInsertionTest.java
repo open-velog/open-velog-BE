@@ -1,9 +1,8 @@
 package com.openvelog.openvelogbe.db;
 
-import com.openvelog.openvelogbe.dummy.BlogDummyGenerator;
 import com.openvelog.openvelogbe.dummy.BoardDummyGenerator;
 import com.openvelog.openvelogbe.dummy.MemberDummyGenerator;
-import org.junit.jupiter.api.Disabled;
+import com.openvelog.openvelogbe.dummy.WishDummyGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,38 +13,38 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Disabled
 public class DummyDataInsertionTest {
 
     private MemberDummyGenerator memberDummyGenerator;
 
-    private BlogDummyGenerator blogDummyGenerator;
-
     private BoardDummyGenerator boardDummyGenerator;
+
+    private WishDummyGenerator wishDummyGenerator;
 
     @Autowired
     DummyDataInsertionTest(
             MemberDummyGenerator memberDummyGenerator,
-            BlogDummyGenerator blogDummyGenerator,
-            BoardDummyGenerator boardDummyGenerator
+            BoardDummyGenerator boardDummyGenerator,
+            WishDummyGenerator wishDummyGenerator
     ) {
         this.memberDummyGenerator = memberDummyGenerator;
-        this.blogDummyGenerator = blogDummyGenerator;
         this.boardDummyGenerator = boardDummyGenerator;
+        this.wishDummyGenerator = wishDummyGenerator;
     }
 
     @Test
     void insertDummyMembers() {
-        assertTrue(memberDummyGenerator.insertDummiesIntoDatabase(10).size() >= 10);
-    }
-
-    @Test
-    void insertDummyBlogs() {
-        assertTrue(blogDummyGenerator.insertDummiesIntoDatabase(10).size() >= 10);
+        assertTrue(memberDummyGenerator.insertDummiesIntoDatabase(100));
     }
 
     @Test
     void insertDummyBoards() {
-        assertTrue(boardDummyGenerator.insertDummiesIntoDatabase(100).size() >= 100);
+        assertTrue(boardDummyGenerator.insertDummiesIntoDatabase(10000));
     }
+
+    @Test
+    void insertDummyWishes() throws InterruptedException {
+        assertTrue(wishDummyGenerator.insertDummiesIntoDatabase(9800));
+    }
+
 }

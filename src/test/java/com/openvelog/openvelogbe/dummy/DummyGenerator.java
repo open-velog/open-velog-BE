@@ -12,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -28,50 +29,5 @@ public abstract class DummyGenerator<E, R extends JpaRepository> {
 
     public abstract E generateDummyEntityOfThis();
 
-    public boolean insertDummyIntoDatabase() {
-        E generatedDummyEntity = generateDummyEntityOfThis();
-        boolean isSucceeded = true;
-
-        try {
-            repository.save(generatedDummyEntity);
-        } catch (DataIntegrityViolationException dataIntegrityViolationException) {
-            log.error("Insertion fail.");
-            isSucceeded = false;
-        } catch (RuntimeException runtimeException) {
-            runtimeException.printStackTrace();
-            isSucceeded = false;
-        }
-
-        return isSucceeded;
-    }
-
-    public List<E> insertDummiesIntoDatabase(long dummyCount) {
-        long dummyInserted = 0;
-        long duplicationCount = 0;
-
-        while (dummyInserted < dummyCount) {
-            boolean isInsertionSucceeded = insertDummyIntoDatabase();
-
-            if (isInsertionSucceeded) {
-                dummyInserted += 1;
-                duplicationCount = 0;
-            }
-            else {
-                // 테스트 시, 과부하를 막기위한 코드
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                duplicationCount += 1;
-            }
-
-            if (duplicationCount >= 10) {
-                throw new IllegalArgumentException("Too many insertion fails at once. Some setting might be wrong");
-            }
-        }
-
-        return  repository.findAll();
-    }
+    abstract public boolean insertDummiesIntoDatabase(int dummyCount) throws InterruptedException;
 }

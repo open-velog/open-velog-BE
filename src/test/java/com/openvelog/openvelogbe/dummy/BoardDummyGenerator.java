@@ -6,17 +6,24 @@ import com.openvelog.openvelogbe.common.repository.BlogRepository;
 import com.openvelog.openvelogbe.common.repository.BoardRepository;
 import com.openvelog.openvelogbe.crawling.entity.CrawledBoard;
 import com.openvelog.openvelogbe.crawling.repository.CrawledBoardRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 @Lazy
+@Slf4j
 public class BoardDummyGenerator extends DummyGenerator<Board, BoardRepository> {
+
+    private final int MAX_VIEW_COUNT = 1000000;
+
+    private final int BATCH_SIZE = 1000;
 
     private BlogRepository blogRepository;
 
@@ -35,7 +42,7 @@ public class BoardDummyGenerator extends DummyGenerator<Board, BoardRepository> 
         super(repository);
         this.crawledBoardRepository = crawledBoardRepository;
         this.blogRepository = blogRepository;
-        this.crawledBoards = crawledBoardRepository.findAll(PageRequest.of(0, 1000, Sort.unsorted())).getContent();
+        this.crawledBoards = crawledBoardRepository.findAll(PageRequest.of(0, BATCH_SIZE, Sort.unsorted())).getContent();
         this.blogs = blogRepository.findAll();
     }
 
@@ -48,9 +55,47 @@ public class BoardDummyGenerator extends DummyGenerator<Board, BoardRepository> 
                 .title(randomlySelectedCrawledBoard.getTitle())
                 .content(randomlySelectedCrawledBoard.getContent())
                 .blog(randomlySelectedBlog)
-                .viewCount(0L)
+                .viewCount((long)MAX_VIEW_COUNT)
                 .build();
 
         return dummyBoard;
     }
+
+    @Override
+    public boolean insertDummiesIntoDatabase(int dummyCount) {
+        List<Board> batchDummyBoards = new ArrayList<>(BATCH_SIZE);
+
+        int page = 820;
+        long totalInserted = 0;
+        while (true) {
+            List<CrawledBoard> crawledBoards = crawledBoardRepository.findAll(PageRequest.of(page, BATCH_SIZE, Sort.unsorted())).getContent();
+
+            if (crawledBoards.size() < BATCH_SIZE) {
+                break;
+            }
+
+            for (CrawledBoard crawledBoard : crawledBoards) {
+                Board dummyBoard = Board.builder()
+                        .title(crawledBoard.getTitle())
+                        .content(crawledBoard.getContent())
+                        .blog(this.blogs.get(random.nextInt(blogs.size())))
+                        .viewCount((long)random.nextInt(MAX_VIEW_COUNT))
+                        .wishes(null)
+                        .build();
+                batchDummyBoards.add(dummyBoard);
+            }
+
+            System.out.println("Inserting 1,000 boards into test-app db");
+            repository.saveAll(batchDummyBoards);
+            System.out.println("Succeeded inserting 1,000 boards into test-app db!");
+
+            totalInserted += BATCH_SIZE;
+            page += 1;
+            batchDummyBoards.clear();
+            System.out.println("total " + totalInserted + " inserted. page : " + page);
+        }
+
+        return true;
+    }
+
 }
