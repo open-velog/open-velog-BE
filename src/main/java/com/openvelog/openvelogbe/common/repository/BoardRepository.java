@@ -19,7 +19,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 //    @EntityGraph(attributePaths = {
 //            "wishes", "blog", "blog.member"
 //    })
-    @Query(value = "SELECT * FROM boards WHERE MATCH(title, content) AGAINST(:keyword IN BOOLEAN MODE)",nativeQuery = true)
+    @Query(value = "select * from boards where match(title) against(:keyword) or match(content) against(:keyword)",nativeQuery = true)
     Page<Board> searchTitleOrContentOrBlogTitle(@Param("keyword") String keyword, Pageable pageable);
     Optional<Board> findById(Long boardId);
 
@@ -29,9 +29,19 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     })
     Optional<Board> findByIdJPQL(Long boardId);
 
-    @Query("select b from boards b left join b.wishes w where b.blog.id = :blogId group by b.id")
+    @Query("select b from boards b where b.blog.member.id = :memberId")
     @EntityGraph(attributePaths = {
-            "wishes"
+            "blog", "blog.member"
     })
+    Page<Board> findBoardsByMemberIdJPQL(Long memberId, Pageable pageable);
+
+
+    @Query("select b from boards b where b.blog.member.userId = :userId")
+    @EntityGraph(attributePaths = {
+            "blog", "blog.member"
+    })
+    Page<Board> findBoardsByUserIdJPQL(String userId, Pageable pageable);
+
+    @Query("select b from boards b where b.blog.id = :blogId")
     Page<Board> findBoardsByBlogIdJPQL(Long blogId, Pageable pageable);
 }

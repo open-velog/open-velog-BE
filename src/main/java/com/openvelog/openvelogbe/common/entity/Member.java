@@ -20,7 +20,6 @@ import java.util.Set;
 @NoArgsConstructor
 public class Member extends Timestamped {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,8 +44,8 @@ public class Member extends Timestamped {
     @Column(nullable = false)
     private LocalDate birthday;
 
-    @OneToMany(mappedBy = "member")
-    private Set<Blog> blogs = new LinkedHashSet<>();
+    @OneToOne(mappedBy = "member")
+    private Blog blog;
 
     @OneToMany(mappedBy = "member")
     private Set<BoardWishMember> wishes;

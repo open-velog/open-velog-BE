@@ -25,7 +25,8 @@ public class Blog extends Timestamped {
     @Column(columnDefinition = "text")
     private String introduce;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @OneToMany(mappedBy = "blog")

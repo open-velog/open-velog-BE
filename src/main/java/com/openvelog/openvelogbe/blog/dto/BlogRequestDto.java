@@ -4,6 +4,7 @@ import com.openvelog.openvelogbe.common.entity.Board;
 import com.openvelog.openvelogbe.common.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
@@ -16,6 +17,7 @@ import java.util.Set;
 public class BlogRequestDto {
 
     @Getter
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class BlogAdd {
 
@@ -24,6 +26,7 @@ public class BlogRequestDto {
     }
 
     @Getter
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class BlogUpdate {
 

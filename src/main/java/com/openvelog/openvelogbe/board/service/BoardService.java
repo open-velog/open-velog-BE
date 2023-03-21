@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -95,7 +93,7 @@ public class BoardService {
         boardRepository.deleteById(board.getId());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<BoardResponseDto> searchBoards (String keyword, Integer page, Integer size, UserDetailsImpl userDetails){
         Member member = userDetails != null ? userDetails.getUser() : null;
 
@@ -116,5 +114,17 @@ public class BoardService {
     public Page<BoardResponseDto> getBoardListByBlog(Long blogId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         return boardRepository.findBoardsByBlogIdJPQL(blogId, pageable).map(BoardResponseDto::of);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BoardResponseDto> getBoardListByBlogMemberId(Long memberId, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return boardRepository.findBoardsByMemberIdJPQL(memberId, pageable).map(BoardResponseDto::of);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BoardResponseDto> getBoardListByBlogUserId(String userId, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return boardRepository.findBoardsByUserIdJPQL(userId, pageable).map(BoardResponseDto::of);
     }
 }
