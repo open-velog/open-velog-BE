@@ -21,8 +21,15 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "UNION ALL" +
             " (SELECT * FROM boards WHERE MATCH(content) AGAINST(:keyword IN BOOLEAN MODE) ORDER BY id DESC LIMIT :totalCount)" +
             ") AS combined_results LIMIT :offset, :size", nativeQuery = true)
+    List<Board> searchTitleOrContentOrBlogTitle(String keyword, Integer offset, Integer totalCount, Integer size);
 
-    List<Board>  searchTitleOrContentOrBlogTitle(String keyword, Integer offset, Integer totalCount, Integer size);
+    @Query(value = "select count(distinct combined_results.id) " +
+            " FROM (" +
+            "(SELECT * FROM boards WHERE MATCH(title) AGAINST(:keyword IN BOOLEAN MODE) ORDER BY id DESC) " +
+            "UNION ALL" +
+            " (SELECT * FROM boards WHERE MATCH(content) AGAINST(:keyword IN BOOLEAN MODE) ORDER BY id DESC) " +
+            ") AS combined_results", nativeQuery = true)
+    Long searchTitleOrContentOrBlogTitleCount(String keyword);
     Optional<Board> findById(Long boardId);
 
     @Query("select b from boards b where b.id = :boardId")
