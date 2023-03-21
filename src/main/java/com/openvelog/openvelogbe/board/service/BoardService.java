@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -94,12 +96,13 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public Page<BoardResponseDto> searchBoards (String keyword, Integer page, Integer size, UserDetailsImpl userDetails){
+    public List<BoardResponseDto> searchBoards (String keyword, Integer page, Integer size, UserDetailsImpl userDetails){
         Member member = userDetails != null ? userDetails.getUser() : null;
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<Board> boards = boardRepository.searchTitleOrContentOrBlogTitle(keyword + "*", pageable);
+//        Page<Board> boards = boardRepository.searchTitleOrContentOrBlogTitle(keyword + "*", pageable);
+        List<Board> boards = boardRepository.searchTitleOrContentOrBlogTitle(keyword, (page-1) * size, page * size, size);
 
         GetAgeRange getAgeRange = new GetAgeRange();
         AgeRange ageRange = member != null ? getAgeRange.getAge(member) : null;
@@ -107,7 +110,8 @@ public class BoardService {
 
         redisRepository.save(newkeyword);
 
-        return boards.map(board -> BoardResponseDto.of(board, member));
+//        return boards.map(board -> BoardResponseDto.of(board, member));
+        return boards.stream().map(board -> BoardResponseDto.of(board, member)).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
