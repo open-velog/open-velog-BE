@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-# Read the environment variable from the temporary file
-source /home/ubuntu/app/env.tmp
-
-PROFILE=$SPRING_PROFILE
+PROFILE=$1
 
 if [ -z $PROFILE ]; then
   echo "Please provide a profile (dev/prod) as an environment variable"

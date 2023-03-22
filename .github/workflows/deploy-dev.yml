@@ -40,7 +40,6 @@ jobs:
       - run: touch ./src/main/resources/application-dev.properties
       - run: echo "${{ secrets.APPLICATION_DEV }}" > ./src/main/resources/application-dev.properties
       - run: cat ./src/main/resources/application.properties
-      - run: echo "SPRING_PROFILE=${{ env.SPRING_PROFILE }}" > ./env.tmp
 
       - name: Run chmod to make gradlew executable
         run: chmod +x ./gradlew
@@ -75,5 +74,5 @@ jobs:
             --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
             --deployment-config-name CodeDeployDefault.AllAtOnce \
             --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
-            --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip
-#            --environment-overrides '{"name": "SPRING_PROFILE", "value": "${{ env.SPRING_PROFILE }}", "type": "PLAINTEXT"}'
+            --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip \
+            --environment-overrides '{"name": "SPRING_PROFILE", "value": "${{ env.SPRING_PROFILE }}", "type": "PLAINTEXT"}'
