@@ -40,6 +40,7 @@ jobs:
       - run: touch ./src/main/resources/application-dev.properties
       - run: echo "${{ secrets.APPLICATION_DEV }}" > ./src/main/resources/application-dev.properties
       - run: cat ./src/main/resources/application.properties
+      - run: echo "SPRING_PROFILE=${{ env.SPRING_PROFILE }}" > ./env.tmp
 
       - name: Run chmod to make gradlew executable
         run: chmod +x ./gradlew
@@ -67,11 +68,7 @@ jobs:
             --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
             --source .
 
-      # (6) Spring 프로파일 환경 변수 값 저장
-      - name: Create temporary environment variable file
-        run: echo "SPRING_PROFILE=${{ env.SPRING_PROFILE }}" > env.tmp
-
-      # (7) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
+      # (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
       - name: Deploy to AWS EC2 from S3
         run: |
           aws deploy create-deployment \
