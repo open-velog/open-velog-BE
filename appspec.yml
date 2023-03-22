@@ -5,9 +5,6 @@ files:
   - source:  /
     destination: /home/ubuntu/app
     overwrite: yes
-  - source: env.tmp
-    destination: /home/ubuntu/app/env.tmp
-    overwrite: yes
 
 permissions:
   - object: /
