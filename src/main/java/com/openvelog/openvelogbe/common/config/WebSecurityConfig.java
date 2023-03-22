@@ -98,6 +98,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         for (int port = 3000; port <= 3010; ++port) {
             allowedOriginList.add("http://localhost:"+ port);
         }
+        allowedOriginList.add("https://open-velog.vercel.app");
 
         registry
                 .addMapping("/**") // 프로그램에서 제공하는 URL

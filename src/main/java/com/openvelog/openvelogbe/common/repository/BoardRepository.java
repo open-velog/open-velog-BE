@@ -13,14 +13,23 @@ import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-//    @Query("select b from boards b left join b.blog bl " +
-//            "where :keyword is null or :keyword = '' or b.title like %:keyword% or b.content like %:keyword% " +
-//            "group by b.id")
-//    @EntityGraph(attributePaths = {
-//            "wishes", "blog", "blog.member"
-//    })
-    @Query(value = "select * from boards where match(title) against(:keyword) or match(content) against(:keyword)",nativeQuery = true)
-    Page<Board> searchTitleOrContentOrBlogTitle(@Param("keyword") String keyword, Pageable pageable);
+
+//TODO 성능 개선 필요
+@Query(value = "SELECT DISTINCT(id), created_at, modified_at, content, title, view_count, blog_id" +
+            " FROM (" +
+            "(SELECT * FROM boards WHERE MATCH(title) AGAINST(:keyword IN BOOLEAN MODE) ORDER BY id DESC LIMIT :totalCount) " +
+            "UNION ALL" +
+            " (SELECT * FROM boards WHERE MATCH(content) AGAINST(:keyword IN BOOLEAN MODE) ORDER BY id DESC LIMIT :totalCount)" +
+            ") AS combined_results LIMIT :offset, :size", nativeQuery = true)
+    List<Board> searchTitleOrContentOrBlogTitle(String keyword, Integer offset, Integer totalCount, Integer size);
+
+    @Query(value = "select count(distinct combined_results.id) " +
+            " FROM (" +
+            "(SELECT * FROM boards WHERE MATCH(title) AGAINST(:keyword IN BOOLEAN MODE) ORDER BY id DESC) " +
+            "UNION ALL" +
+            " (SELECT * FROM boards WHERE MATCH(content) AGAINST(:keyword IN BOOLEAN MODE) ORDER BY id DESC) " +
+            ") AS combined_results", nativeQuery = true)
+    Long searchTitleOrContentOrBlogTitleCount(String keyword);
     Optional<Board> findById(Long boardId);
 
     @Query("select b from boards b where b.id = :boardId")

@@ -1,6 +1,7 @@
 package com.openvelog.openvelogbe.board.controller;
 
 import com.openvelog.openvelogbe.board.dto.BoardRequestDto;
+import com.openvelog.openvelogbe.board.dto.BoardResponseAndCountDto;
 import com.openvelog.openvelogbe.board.dto.BoardResponseDto;
 import com.openvelog.openvelogbe.board.service.BoardService;
 import com.openvelog.openvelogbe.common.dto.ApiResponse;
@@ -16,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Tag(name = "Board")
 @RestController
@@ -35,7 +37,7 @@ public class BoardController {
 
     @GetMapping("/search")
     @Operation(summary = "게시글 검색", description ="게시글 제목, 내용, 해당 블로그의 제목에 키워드가 포함된 게시글 목록 조회, page는 1부터 시작")
-    public ApiResponse<Page<BoardResponseDto>> searchBoards(
+    public ApiResponse<BoardResponseAndCountDto> searchBoards(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
