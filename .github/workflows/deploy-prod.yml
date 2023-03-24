@@ -13,7 +13,6 @@ env:
   CODE_DEPLOY_APPLICATION_NAME: my-codedeploy-app
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: my-codedeploy-deployment-group
   RESOURCE_PATH: ./src/main/resources/application.properties
-  SPRING_PROFILE: prod
 
 permissions:
   contents: read
@@ -38,7 +37,7 @@ jobs:
 
       - uses: actions/checkout@v3
       - run: touch ./src/main/resources/application-dev.properties
-      - run: echo "${{ secrets.APPLICATION_PROD }}" > ./src/main/resources/application-prod.properties
+      - run: echo "${{ secrets.APPLICATION_SERVER_PROD }}" > ./src/main/resources/application.properties
       - run: cat ./src/main/resources/application.properties
 
       - name: Run chmod to make gradlew executable
@@ -75,4 +74,3 @@ jobs:
             --deployment-config-name CodeDeployDefault.AllAtOnce \
             --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
             --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip
-            --environment-overrides '{"name": "SPRING_PROFILE", "value": "${{ env.SPRING_PROFILE }}", "type": "PLAINTEXT"}'
