@@ -64,6 +64,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .antMatchers("/api/members/signup").permitAll()
                 .antMatchers("/api/members/login").permitAll()
                 .antMatchers("/api/members/userId/duplicate").permitAll()
+                .antMatchers("/api/board-search/index").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/keywords/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/boards/{blogId}").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/boards/search").permitAll()
@@ -99,6 +100,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
             allowedOriginList.add("http://localhost:"+ port);
         }
         allowedOriginList.add("https://open-velog.vercel.app");
+        allowedOriginList.add("https://search-open-velog-elastic-bvtge6dkgdmsr2i3f3kzwo6m2u.ap-northeast-2.es.amazonaws.com");
 
         registry
                 .addMapping("/**") // 프로그램에서 제공하는 URL
