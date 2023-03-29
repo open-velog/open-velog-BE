@@ -1,3 +1,4 @@
+/*
 package com.openvelog.openvelogbe.common.util;
 
 import com.openvelog.openvelogbe.boardSearch.service.BoardSearchService;
@@ -29,3 +30,4 @@ public class BoardSearchScheduler {
         }
     }
 }
+*/
