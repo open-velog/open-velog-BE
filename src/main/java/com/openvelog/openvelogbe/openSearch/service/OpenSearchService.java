@@ -1,18 +1,21 @@
-package com.openvelog.openvelogbe.boardSearch.service;
+package com.openvelog.openvelogbe.openSearch.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.openvelog.openvelogbe.openSearch.dto.BoardDocumentDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NByteArrayEntity;
-import org.apache.http.nio.entity.NStringEntity;
 import org.elasticsearch.action.index.IndexRequest;
 import com.openvelog.openvelogbe.common.entity.Board;
 import com.openvelog.openvelogbe.common.entity.BoardDocument;
 import com.openvelog.openvelogbe.common.repository.BoardRepository;
 import org.opensearch.client.Request;
+import org.opensearch.client.Response;
 import org.opensearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -22,12 +25,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class BoardSearchService {
+public class OpenSearchService {
 
     private final BoardRepository boardRepository;
     private final RestClient restClient;
@@ -70,24 +73,6 @@ public class BoardSearchService {
             offset += batchSize;
 
         }
-    }
-
-    public void updateBoard(Board board) throws IOException {
-        String endpoint = "/board/_update/" + board.getId();
-
-        ObjectNode docNode = objectMapper.createObjectNode();
-        docNode.put("title", board.getTitle());
-        docNode.put("content", board.getContent());
-        docNode.put("modified_at", board.getModifiedAt().format(DateTimeFormatter.ISO_DATE_TIME));
-        docNode.put("view_count", board.getViewCount());
-
-        ObjectNode requestBody = objectMapper.createObjectNode();
-        requestBody.set("doc", docNode);
-
-        HttpEntity entity = new NStringEntity(requestBody.toString(), ContentType.APPLICATION_JSON);
-        Request request = new Request("POST", endpoint);
-        request.setEntity(entity);
-        restClient.performRequest(request);
     }
 
     private HttpEntity createBulkRequestEntity(List<Board> boards) throws JsonProcessingException, IOException {
@@ -144,4 +129,33 @@ public class BoardSearchService {
             // handle exception
         }
     }
+
+    public List<BoardDocumentDto> search(String keyword, Integer page, Integer size) throws IOException {
+        String endpoint = String.format("/%s/_search", "board");
+        Request request = new Request("GET", endpoint);
+        request.setJsonEntity(getRequestBody(keyword, (page-1) * size, size));
+        Response response = restClient.performRequest(request);
+        return parseResponse(response);
+    }
+
+    private String getRequestBody(String keyword, int offset, int size) {
+        return String.format("{ \"from\": %d, \"size\": %d, \"query\": { \"bool\": { \"should\": [ { \"query_string\": { \"query\": \"*%s*\", \"fields\": [\"title\"], \"default_operator\": \"AND\", \"fuzziness\": \"AUTO\" } }, { \"query_string\": { \"query\": \"*%s*\", \"fields\": [\"content\"], \"default_operator\": \"AND\", \"fuzziness\": \"AUTO\" } } ], \"minimum_should_match\": 1 } }, \"collapse\": { \"field\": \"id\" }, \"sort\": [ { \"id\": { \"order\": \"desc\" } } ] }", offset, size, keyword, keyword);
+    }
+
+    private List<BoardDocumentDto> parseResponse(Response response) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        JsonNode hits = objectMapper.readTree(response.getEntity().getContent()).get("hits").get("hits");
+
+        List<BoardDocumentDto> result = new ArrayList<>();
+        for (JsonNode hit : hits) {
+            JsonNode source = hit.get("_source");
+            BoardDocument boardDocument = objectMapper.treeToValue(source, BoardDocument.class);
+            result.add(BoardDocumentDto.of(boardDocument));
+        }
+
+        return result;
+    }
 }
+
+
+

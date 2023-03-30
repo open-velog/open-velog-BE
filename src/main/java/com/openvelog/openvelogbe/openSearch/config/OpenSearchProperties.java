@@ -1,4 +1,4 @@
-package com.openvelog.openvelogbe.boardSearch.config;
+package com.openvelog.openvelogbe.openSearch.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
@@ -13,9 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class OpenSearchProperties {
     private final Rest rest = new Rest();
 
-    public Rest getRest() {
-        return rest;
-    }
+    public Rest getRest() { return rest; }
 
     public static class Rest {
         private String uris;

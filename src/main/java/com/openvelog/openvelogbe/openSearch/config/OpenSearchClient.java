@@ -1,4 +1,4 @@
-package com.openvelog.openvelogbe.boardSearch.config;
+package com.openvelog.openvelogbe.openSearch.config;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;

@@ -64,7 +64,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .antMatchers("/api/members/signup").permitAll()
                 .antMatchers("/api/members/login").permitAll()
                 .antMatchers("/api/members/userId/duplicate").permitAll()
-                .antMatchers("/api/board-search/index").permitAll()
+                .antMatchers("/api/opensearch/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/keywords/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/boards/{blogId}").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/boards/search").permitAll()
