@@ -139,7 +139,8 @@ public class OpenSearchService {
     }
 
     private String getRequestBody(String keyword, int offset, int size) {
-        return String.format("{ \"from\": %d, \"size\": %d, \"query\": { \"bool\": { \"should\": [ { \"query_string\": { \"query\": \"*%s*\", \"fields\": [\"title\"], \"default_operator\": \"AND\", \"fuzziness\": \"AUTO\" } }, { \"query_string\": { \"query\": \"*%s*\", \"fields\": [\"content\"], \"default_operator\": \"AND\", \"fuzziness\": \"AUTO\" } } ], \"minimum_should_match\": 1 } }, \"collapse\": { \"field\": \"id\" }, \"sort\": [ { \"id\": { \"order\": \"desc\" } } ] }", offset, size, keyword, keyword);
+//        return String.format("{ \"from\": %d, \"size\": %d, \"query\": { \"bool\": { \"should\": [ { \"query_string\": { \"query\": \"*%s*\", \"fields\": [\"title\"], \"default_operator\": \"AND\", \"fuzziness\": \"AUTO\" } }, { \"query_string\": { \"query\": \"*%s*\", \"fields\": [\"content\"], \"default_operator\": \"AND\", \"fuzziness\": \"AUTO\" } } ], \"minimum_should_match\": 1 } }, \"collapse\": { \"field\": \"id\" }, \"sort\": [ { \"id\": { \"order\": \"desc\" } } ] }", offset, size, keyword, keyword);
+        return String.format("{\"track_total_hits\": true,\"from\": %d, \"size\": %d,\"query\": {\"bool\": {\"must\": [{\"match\": {\"title\": \"%s\"}},{\"match\": {\"content\": \"%s\"}}]}}}", offset, size, keyword, keyword);
     }
 
     private List<BoardDocumentDto> parseResponse(Response response) throws IOException {

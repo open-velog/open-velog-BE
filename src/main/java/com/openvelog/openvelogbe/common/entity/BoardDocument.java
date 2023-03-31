@@ -22,19 +22,19 @@ public class BoardDocument extends Timestamped {
     @Id
     private Long id;
 
-    @Field(type = FieldType.Text, analyzer = "standard")
+    @Field(type = FieldType.Text, analyzer = "ngram_analyzer")
     private String title;
 
-    @Field(type = FieldType.Text, analyzer = "standard")
+    @Field(type = FieldType.Text, analyzer = "ngram_analyzer")
     private String content;
 
-    @Field(type = FieldType.Text, analyzer = "standard")
+    @Field(type = FieldType.Text)
     private LocalDateTime created_at;
 
-    @Field(type = FieldType.Text, analyzer = "standard")
+    @Field(type = FieldType.Text)
     private LocalDateTime modified_at;
 
-    @Field(type = FieldType.Long, analyzer = "standard")
+    @Field(type = FieldType.Long)
     private Long view_count;
 
     public static BoardDocument create (Board board) {
