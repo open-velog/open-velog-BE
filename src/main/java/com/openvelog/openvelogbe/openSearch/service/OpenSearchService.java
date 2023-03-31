@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.openvelog.openvelogbe.board.dto.BoardResponseAndCountDto;
+import com.openvelog.openvelogbe.board.dto.BoardResponseDto;
 import com.openvelog.openvelogbe.openSearch.dto.BoardDocumentDto;
+import com.openvelog.openvelogbe.openSearch.dto.BoardDocumentResponseAndCountDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
@@ -27,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -130,22 +134,24 @@ public class OpenSearchService {
         }
     }
 
-    public List<BoardDocumentDto> search(String keyword, Integer page, Integer size) throws IOException {
+    public BoardDocumentResponseAndCountDto search(String keyword, Integer page, Integer size) throws IOException {
         String endpoint = String.format("/%s/_search", "board");
         Request request = new Request("GET", endpoint);
         request.setJsonEntity(getRequestBody(keyword, (page-1) * size, size));
         Response response = restClient.performRequest(request);
-        return parseResponse(response);
+        return parseResponse(response,page,size);
     }
 
     private String getRequestBody(String keyword, int offset, int size) {
-//        return String.format("{ \"from\": %d, \"size\": %d, \"query\": { \"bool\": { \"should\": [ { \"query_string\": { \"query\": \"*%s*\", \"fields\": [\"title\"], \"default_operator\": \"AND\", \"fuzziness\": \"AUTO\" } }, { \"query_string\": { \"query\": \"*%s*\", \"fields\": [\"content\"], \"default_operator\": \"AND\", \"fuzziness\": \"AUTO\" } } ], \"minimum_should_match\": 1 } }, \"collapse\": { \"field\": \"id\" }, \"sort\": [ { \"id\": { \"order\": \"desc\" } } ] }", offset, size, keyword, keyword);
-        return String.format("{\"track_total_hits\": true,\"from\": %d, \"size\": %d,\"query\": {\"bool\": {\"must\": [{\"match\": {\"title\": \"%s\"}},{\"match\": {\"content\": \"%s\"}}]}}}", offset, size, keyword, keyword);
+        //return String.format("{\"track_total_hits\": true,\"from\": %d, \"size\": %d,\"query\": {\"bool\": {\"should\": [{\"query_string\": {\"query\": \"%s\",\"fields\": [\"title\"],\"default_operator\": \"AND\"}},{\"query_string\": {\"query\": \"%s\",\"fields\": [\"content\"],\"default_operator\": \"AND\"}}],\"minimum_should_match\": 1}}, \"sort\": [{\"id\": {\"order\": \"desc\"}}]}", offset, size, keyword, keyword);
+        return String.format("{\"track_total_hits\": true,\"from\": %d, \"size\": %d,\"query\": {\"bool\": {\"should\": [{\"match\": {\"title\": {\"query\": \"%s\",\"operator\": \"AND\"}}},{\"match\": {\"content\": {\"query\": \"%s\",\"operator\": \"AND\"}}}],\"minimum_should_match\": 1}}, \"sort\": [{\"id\": {\"order\": \"desc\"}}]}", offset, size, keyword, keyword);
     }
 
-    private List<BoardDocumentDto> parseResponse(Response response) throws IOException {
+    private BoardDocumentResponseAndCountDto parseResponse(Response response, Integer page, Integer size) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        JsonNode hits = objectMapper.readTree(response.getEntity().getContent()).get("hits").get("hits");
+        JsonNode root = objectMapper.readTree(response.getEntity().getContent());
+        JsonNode hits = root.get("hits").get("hits");
+        Integer totalHits = root.get("hits").get("total").get("value").intValue();
 
         List<BoardDocumentDto> result = new ArrayList<>();
         for (JsonNode hit : hits) {
@@ -154,7 +160,7 @@ public class OpenSearchService {
             result.add(BoardDocumentDto.of(boardDocument));
         }
 
-        return result;
+        return BoardDocumentResponseAndCountDto.of(result,page-1,size,totalHits);
     }
 }
 

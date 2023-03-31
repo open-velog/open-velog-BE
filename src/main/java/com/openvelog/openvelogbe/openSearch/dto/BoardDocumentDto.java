@@ -25,6 +25,8 @@ public class BoardDocumentDto {
     @Schema(example = "게시글 조회 수")
     private Long view_count;
 
+
+
     public static BoardDocumentDto of(BoardDocument boardDocument) {
         BoardDocumentDtoBuilder builder = BoardDocumentDto.builder()
                 .id(boardDocument.getId())
@@ -35,4 +37,6 @@ public class BoardDocumentDto {
                 .view_count(boardDocument.getView_count());
         return builder.build();
     }
+
+
 }

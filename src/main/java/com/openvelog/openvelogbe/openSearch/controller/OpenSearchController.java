@@ -1,6 +1,7 @@
 package com.openvelog.openvelogbe.openSearch.controller;
 
 import com.openvelog.openvelogbe.openSearch.dto.BoardDocumentDto;
+import com.openvelog.openvelogbe.openSearch.dto.BoardDocumentResponseAndCountDto;
 import com.openvelog.openvelogbe.openSearch.service.OpenSearchService;
 import com.openvelog.openvelogbe.common.dto.ApiResponse;
 import com.openvelog.openvelogbe.common.dto.ErrorResponseDto;
@@ -13,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +46,7 @@ public class OpenSearchController {
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {
         try {
-            List<BoardDocumentDto> result = openSearchService.search(keyword,page,size);
+            BoardDocumentResponseAndCountDto result = openSearchService.search(keyword,page,size);
             return ApiResponse.successOf(HttpStatus.OK,result);
         } catch (IOException e) {
             logger.error("OpenSearch 검색 중 예외 발생", e);
