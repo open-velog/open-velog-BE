@@ -84,4 +84,9 @@ public class BlogService {
         return blogPage.map(objects -> BlogResponseDto.of((Blog)objects[0], (Long)objects[1], (Long)objects[2]));
     }
 
+    @Transactional
+    public void initializeViewCountSumAndWishCountSum() {
+        blogRepository.updateViewCountSumAndWishCountSum();
+    }
+
 }

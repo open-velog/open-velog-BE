@@ -57,6 +57,9 @@ public class BoardService {
         );
 
         board.addViewCount();
+        // Update the blog's view_count_sum
+        Blog blog = board.getBlog();
+        blog.updateViewCountSum(blog.getViewCountSum() + 1);
 
         return BoardResponseDto.of(board, member);
     }
@@ -135,4 +138,6 @@ public class BoardService {
         Pageable pageable = PageRequest.of(page - 1, size);
         return boardRepository.findBoardsByUserIdJPQL(userId, pageable).map(BoardResponseDto::of);
     }
+
+
 }

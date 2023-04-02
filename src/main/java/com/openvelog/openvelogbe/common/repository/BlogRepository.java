@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.persistence.Tuple;
@@ -45,4 +46,11 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
             "member", "boards","boards.wishes"
     })
     Page<Object[]> findAllOrderByBoardsCountedDesc(Pageable pageable);
+
+    @Modifying
+    @Query(value = "UPDATE blogs b SET " +
+            "b.view_count_sum = COALESCE((SELECT SUM(bb.view_count) FROM boards bb WHERE bb.blog_id = b.id), 0), " +
+            "b.wish_count_sum = COALESCE((SELECT SUM(wishes_count) FROM (SELECT bb.id, COUNT(w.board_id) as wishes_count FROM boards bb LEFT JOIN board_wish_members w ON bb.id = w.board_id WHERE bb.blog_id = b.id GROUP BY bb.id) as subquery), 0)",
+            nativeQuery = true)
+    void updateViewCountSumAndWishCountSum();
 }

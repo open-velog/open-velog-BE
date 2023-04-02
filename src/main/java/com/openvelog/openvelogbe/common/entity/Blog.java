@@ -25,6 +25,13 @@ public class Blog extends Timestamped {
     @Column(columnDefinition = "text")
     private String introduce;
 
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long viewCountSum;
+
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long wishCountSum;
+
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -48,6 +55,14 @@ public class Blog extends Timestamped {
 
     public void update(BlogRequestDto.BlogUpdate dto) {
         this.introduce = dto.getIntroduce();
+    }
+
+    public void updateViewCountSum(Long viewCountSum){
+        this.viewCountSum=viewCountSum;
+    }
+
+    public void updateWishCountSum(Long wishCountSum){
+        this.wishCountSum=wishCountSum;
     }
 
     @PreRemove
