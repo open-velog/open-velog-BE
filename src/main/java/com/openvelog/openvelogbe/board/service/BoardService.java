@@ -4,10 +4,7 @@ import com.openvelog.openvelogbe.board.dto.BoardRequestDto;
 import com.openvelog.openvelogbe.board.dto.BoardResponseAndCountDto;
 import com.openvelog.openvelogbe.board.dto.BoardResponseDto;
 import com.openvelog.openvelogbe.common.dto.ErrorMessage;
-import com.openvelog.openvelogbe.common.entity.Blog;
-import com.openvelog.openvelogbe.common.entity.Board;
-import com.openvelog.openvelogbe.common.entity.Keyword;
-import com.openvelog.openvelogbe.common.entity.Member;
+import com.openvelog.openvelogbe.common.entity.*;
 import com.openvelog.openvelogbe.common.entity.enums.AgeRange;
 import com.openvelog.openvelogbe.common.repository.BlogRepository;
 import com.openvelog.openvelogbe.common.repository.BoardRepository;
@@ -18,11 +15,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +32,8 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BlogRepository blogRepository;
     private final KeywordRedisRepository redisRepository;
+
+    private final KafkaTemplate<String, SearchLog> logKafkaTemplate;
     @Transactional
     public BoardResponseDto createBoard(BoardRequestDto.BoardAdd dto, UserDetailsImpl userDetails) {
 
@@ -109,8 +110,11 @@ public class BoardService {
         GetAgeRange getAgeRange = new GetAgeRange();
         AgeRange ageRange = member != null ? getAgeRange.getAge(member) : null;
         Keyword newkeyword = new Keyword (keyword, member, ageRange);
-
         redisRepository.save(newkeyword);
+
+        SearchLog searchLog = SearchLog.create(keyword, member);
+
+        logKafkaTemplate.send("search-log", keyword, searchLog);
 
         return BoardResponseAndCountDto.of(
                 boards.stream().map(board -> BoardResponseDto.of(board, member)).collect(Collectors.toList()),
