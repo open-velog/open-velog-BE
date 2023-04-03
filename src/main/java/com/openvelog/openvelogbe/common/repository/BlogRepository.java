@@ -30,8 +30,6 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
     })
     List<Object[]> findByUserIdJPQL(String userId);
 
-    Optional<Blog> findByIdAndMemberId(Long blogId, Long memberId);
-
     Optional<Blog> findByMemberId(Long memberId);
 
     @Query("SELECT b, " +
@@ -47,10 +45,41 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
     })
     Page<Object[]> findAllOrderByBoardsCountedDesc(Pageable pageable);
 
+    @Query("SELECT b " +
+            "FROM blogs b " +
+            "LEFT JOIN b.member " +
+            "ORDER BY b.viewCountSum DESC, b.createdAt DESC")
+    Page<Blog> findAllByViewCountSum(Pageable pageable);
+
+
+    @Query("SELECT b " +
+            "FROM blogs b " +
+            "LEFT JOIN b.member " +
+            "ORDER BY b.wishCountSum DESC, b.createdAt DESC")
+    Page<Blog> findAllByWishCountSum(Pageable pageable);
+
     @Modifying
-    @Query(value = "UPDATE blogs b SET " +
-            "b.view_count_sum = COALESCE((SELECT SUM(bb.view_count) FROM boards bb WHERE bb.blog_id = b.id), 0), " +
-            "b.wish_count_sum = COALESCE((SELECT SUM(wishes_count) FROM (SELECT bb.id, COUNT(w.board_id) as wishes_count FROM boards bb LEFT JOIN board_wish_members w ON bb.id = w.board_id WHERE bb.blog_id = b.id GROUP BY bb.id) as subquery), 0)",
+    @Query(value = "UPDATE blogs b " +
+            "INNER JOIN (" +
+            "SELECT blog_id, SUM(view_count) AS total_views " +
+            "FROM boards " +
+            "GROUP BY blog_id" +
+            ") v ON b.id = v.blog_id " +
+            "SET b.view_count_sum = v.total_views",
             nativeQuery = true)
-    void updateViewCountSumAndWishCountSum();
+    void updateViewCountSum();
+
+    @Modifying
+    @Query(value = "UPDATE blogs b " +
+            "INNER JOIN (" +
+            "SELECT blog_id, COUNT(*) as total_likes " +
+            "FROM boards brd " +
+            "LEFT JOIN board_wish_members bwm " +
+            "ON brd.id = bwm.board_id " +
+            "GROUP BY blog_id" +
+            ") v ON b.id = v.blog_id " +
+            "SET b.wish_count_sum = v.total_likes",
+            nativeQuery = true)
+    void updateWishCountSum();
+
 }

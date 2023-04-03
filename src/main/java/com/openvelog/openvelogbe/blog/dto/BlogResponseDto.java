@@ -48,14 +48,16 @@ public class BlogResponseDto {
 
     private LocalDateTime modifiedAt;
 
-    public static BlogResponseDto of(Blog blog, Long viewCountSum, Long wishCountSum) {
+    public static BlogResponseDto of(Blog blog) {
         BlogResponseDtoBuilder builder = builder()
                 .id(blog.getId())
                 .memberUserId(blog.getMember().getUserId())
                 .memberUsername(blog.getMember().getUsername())
                 .introduce(blog.getIntroduce())
-                .viewCountSum(ObjectUtils.defaultIfNull(viewCountSum, 0L))
-                .wishCountSum(ObjectUtils.defaultIfNull(wishCountSum, 0L))
+                .viewCountSum(blog.getViewCountSum())
+                .wishCountSum(blog.getWishCountSum())
+//                .viewCountSum(ObjectUtils.defaultIfNull(viewCountSum, 0L))
+//                .wishCountSum(ObjectUtils.defaultIfNull(wishCountSum, 0L))
                 .createdAt(blog.getCreatedAt())
                 .modifiedAt(blog.getModifiedAt());
 
