@@ -46,16 +46,12 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
     Page<Object[]> findAllOrderByBoardsCountedDesc(Pageable pageable);
 
     @Query("SELECT b " +
-            "FROM blogs b " +
-            "LEFT JOIN b.member " +
-            "ORDER BY b.viewCountSum DESC, b.createdAt DESC")
+            "FROM blogs b ")
     Page<Blog> findAllByViewCountSum(Pageable pageable);
 
 
     @Query("SELECT b " +
-            "FROM blogs b " +
-            "LEFT JOIN b.member " +
-            "ORDER BY b.wishCountSum DESC, b.createdAt DESC")
+            "FROM blogs b " )
     Page<Blog> findAllByWishCountSum(Pageable pageable);
 
     @Modifying
