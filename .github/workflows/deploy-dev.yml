@@ -13,6 +13,7 @@ env:
   CODE_DEPLOY_APPLICATION_NAME: sparta-pre-release-server
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: sparta-pre-release-deply-group
   RESOURCE_PATH: ./src/main/resources/application.properties
+  SPRING_PROFILE: dev
 
 permissions:
   contents: read
@@ -74,3 +75,4 @@ jobs:
             --deployment-config-name CodeDeployDefault.AllAtOnce \
             --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
             --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip
+            --environment-overrides '{"name": "SPRING_PROFILE", "value": "${{ env.SPRING_PROFILE }}", "type": "PLAINTEXT"}'

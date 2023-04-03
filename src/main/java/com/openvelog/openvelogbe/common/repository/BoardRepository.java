@@ -53,4 +53,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("select b from boards b where b.blog.id = :blogId")
     Page<Board> findBoardsByBlogIdJPQL(Long blogId, Pageable pageable);
+
+    Page<Board> findByIdGreaterThanOrderByIdAsc(Long lastProcessedBoardId, Pageable pageable);
 }

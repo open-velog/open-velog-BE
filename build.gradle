@@ -24,7 +24,14 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://maven.opensearch.org/releases'
+    } // OpenSearch Maven Repository 추가
+    maven {
+        url 'https://repo1.maven.org/maven2/'
+    } // Maven Central Repository 미러 추가
 }
+
 
 dependencies {
     //querydsl 추가
@@ -50,6 +57,16 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    //OpenSearchService
+    implementation 'com.amazonaws:aws-java-sdk-core:1.12.76'
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.76'
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    // 자바 8에서 새롭게 도입된 java.time 패키지의 타입을 기본적으로 지원하지 않아서 java.time 패키지의 타입도 정상적으로 직렬화/역직렬화 실패
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'org.opensearch.client:opensearch-rest-client:1.2.1'
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
 
     // AWS s3
 //    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
