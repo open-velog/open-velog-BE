@@ -37,7 +37,7 @@ jobs:
 
       - uses: actions/checkout@v3
       - run: touch ./src/main/resources/application-dev.properties
-      - run: echo "${{ secrets.APPLICATION_SERVER_PROD }}" > ./src/main/resources/application.properties
+      - run: echo "${{ secrets.APPLICATION_PROD }}" > ./src/main/resources/application-prod.properties
       - run: cat ./src/main/resources/application.properties
 
       - name: Run chmod to make gradlew executable
