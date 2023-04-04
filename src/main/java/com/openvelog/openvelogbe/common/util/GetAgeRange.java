@@ -7,7 +7,7 @@ import com.openvelog.openvelogbe.common.entity.enums.Gender;
 import java.util.Calendar;
 
 public class GetAgeRange {
-    public AgeRange getAge(Member member)
+    public static AgeRange getAge(Member member)
     {
         AgeRange ageRange;
         Calendar current = Calendar.getInstance();
