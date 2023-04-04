@@ -60,13 +60,21 @@ public class BlogService {
         blogRepository.delete(blog);
     }
 
-    @Transactional(readOnly = true)
+    /*@Transactional(readOnly = true)
     public BlogResponseDto getBlog(String userId) {
         Object[] objects = blogRepository.findByUserIdJPQL(userId).stream().findFirst().orElseThrow(
                 () -> new EntityNotFoundException(ErrorMessage.NO_BLOG.getMessage())
         );
 
         return BlogResponseDto.of((Blog)objects[0]);
+    }*/
+    @Transactional(readOnly = true)
+    public BlogResponseDto getBlog(String userId) {
+        Blog blog = blogRepository.findByUserId(userId).orElseThrow(
+                () -> new EntityNotFoundException(ErrorMessage.NO_BLOG.getMessage())
+        );
+
+        return BlogResponseDto.of(blog);
     }
 
     @Transactional(readOnly = true)

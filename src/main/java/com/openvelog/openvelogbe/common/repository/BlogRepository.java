@@ -32,6 +32,9 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
 
     Optional<Blog> findByMemberId(Long memberId);
 
+    @Query("SELECT b from blogs b WHERE b.member.userId= :userId")
+    Optional<Blog> findByUserId(String userId);
+
     @Query("SELECT b, " +
             "SUM(bb.viewCount) as viewCountSum, " +
             "SUM(bb.wishes.size) as wishCountSum " +
