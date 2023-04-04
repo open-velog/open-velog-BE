@@ -57,8 +57,8 @@ public class Blog extends Timestamped {
         this.introduce = dto.getIntroduce();
     }
 
-    public void updateViewCountSum(Long viewCountSum){
-        this.viewCountSum=viewCountSum;
+    public void updateViewCountSum(Long viewCountSumDifference) {
+        this.viewCountSum += viewCountSumDifference;
     }
 
     public void updateWishCountSum(Long wishCountSum){

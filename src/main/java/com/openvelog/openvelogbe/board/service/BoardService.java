@@ -4,10 +4,7 @@ import com.openvelog.openvelogbe.board.dto.BoardRequestDto;
 import com.openvelog.openvelogbe.board.dto.BoardResponseAndCountDto;
 import com.openvelog.openvelogbe.board.dto.BoardResponseDto;
 import com.openvelog.openvelogbe.common.dto.ErrorMessage;
-import com.openvelog.openvelogbe.common.entity.Blog;
-import com.openvelog.openvelogbe.common.entity.Board;
-import com.openvelog.openvelogbe.common.entity.Keyword;
-import com.openvelog.openvelogbe.common.entity.Member;
+import com.openvelog.openvelogbe.common.entity.*;
 import com.openvelog.openvelogbe.common.entity.enums.AgeRange;
 import com.openvelog.openvelogbe.common.repository.BlogRepository;
 import com.openvelog.openvelogbe.common.repository.BoardRepository;
@@ -33,6 +30,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BlogRepository blogRepository;
     private final KeywordRedisRepository redisRepository;
+
     @Transactional
     public BoardResponseDto createBoard(BoardRequestDto.BoardAdd dto, UserDetailsImpl userDetails) {
 
@@ -55,11 +53,6 @@ public class BoardService {
         Board board = boardRepository.findByIdJPQL(boardId).orElseThrow(
                 () -> new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
         );
-
-        board.addViewCount();
-        // Update the blog's view_count_sum
-        Blog blog = board.getBlog();
-        blog.updateViewCountSum(blog.getViewCountSum() + 1);
 
         return BoardResponseDto.of(board, member);
     }
