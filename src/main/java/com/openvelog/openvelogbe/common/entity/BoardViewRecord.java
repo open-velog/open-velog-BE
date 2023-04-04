@@ -2,8 +2,10 @@ package com.openvelog.openvelogbe.common.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 

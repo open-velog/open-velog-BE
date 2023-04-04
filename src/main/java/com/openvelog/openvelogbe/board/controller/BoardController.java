@@ -51,14 +51,16 @@ public class BoardController {
 
     @GetMapping("/{boardId}")
     @Operation(summary = "게시글 조회", description ="특정 boardId를 갖는 단일 게시글 조회")
-    public ApiResponse<BoardResponseDto> getBoard(
+    public CompletableFuture<ApiResponse<BoardResponseDto>> getBoard(
             @PathVariable Long boardId,
             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         // update view count
         CompletableFuture.runAsync(() -> boardViewRecordService.recordBoardViewCount(boardId));
 
-        return ApiResponse.successOf(HttpStatus.OK, boardService.getBoard(boardId, userDetails));
+        return CompletableFuture.supplyAsync(() ->
+            ApiResponse.successOf(HttpStatus.OK, boardService.getBoard(boardId, userDetails))
+        );
     }
 
     @PutMapping("/{boardId}")

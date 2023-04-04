@@ -8,6 +8,8 @@ import com.openvelog.openvelogbe.common.repository.BlogRepository;
 import com.openvelog.openvelogbe.common.repository.BoardRepository;
 import com.openvelog.openvelogbe.common.repository.BoardViewRecordRedisRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import javax.persistence.EntityNotFoundException;
 import java.math.BigInteger;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardViewRecordService {
@@ -29,6 +32,11 @@ public class BoardViewRecordService {
     void updateBoardViewCounts() {
         // Get all view records from Redis
         List<BoardViewRecord> boardViewRecords = boardViewRecordRedisRepository.findAll();
+        if (boardViewRecords.size() == 0) {
+            return;
+        }
+
+        log.info("Starts updating " + boardViewRecords.size() + " boards view count from Scheduler...");
 
         // update view count to on-disk database
         for (BoardViewRecord boardViewRecord : boardViewRecords) {
@@ -45,13 +53,17 @@ public class BoardViewRecordService {
 
             // update view_count_sum field of boards table
             board.updateViewCount(viewCount);
+            boardRepository.save(board);
 
             // update view_count field of blogs table
             blog.updateViewCountSum(viewCount);
+            blogRepository.save(blog);
         }
 
         // Remove the view count from Redis
         boardViewRecordRedisRepository.deleteAll(boardViewRecords);
+
+        log.info("Finished updating board view count from Scheduler!");
     }
 
     @Transactional
@@ -60,12 +72,13 @@ public class BoardViewRecordService {
                 () -> new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
         );
 
-        BoardViewRecord boardViewRecord = boardViewRecordRedisRepository.findByBoardId(board.getId()).orElse(null);
+        BoardViewRecord boardViewRecord = boardViewRecordRedisRepository.findById(board.getId()).orElse(null);
         if (boardViewRecord == null) {
             boardViewRecord = BoardViewRecord.of(board.getId(), board.getBlog().getId(), 1L);
-            boardViewRecordRedisRepository.save(boardViewRecord);
         } else {
             boardViewRecord.addViewCount();
         }
+
+        boardViewRecordRedisRepository.save(boardViewRecord);
     }
 }
