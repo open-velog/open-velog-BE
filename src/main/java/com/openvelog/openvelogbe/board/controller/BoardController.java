@@ -63,10 +63,11 @@ public class BoardController {
 
     @PutMapping("/{boardId}")
     @Operation(summary = "게시글 수정", description ="특정 boardId의 게시글 수정")
-    public ApiResponse<BoardResponseDto> updateBoard
-            (@PathVariable Long boardId,
-                    @RequestBody @Valid BoardRequestDto.BoardUpdate dto,
-             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ApiResponse<BoardResponseDto> updateBoard(
+            @PathVariable Long boardId,
+            @RequestBody @Valid BoardRequestDto.BoardUpdate dto,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
         return ApiResponse.successOf(HttpStatus.CREATED, boardService.updateBoard(boardId, dto, userDetails));
     }
 
@@ -74,7 +75,8 @@ public class BoardController {
     @Operation(summary = "게시글 삭제", description ="특정 boardId의 게시글 삭제")
     public ApiResponse<BoardResponseDto> deleteStudyBoard(
             @PathVariable Long boardId,
-            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
         boardService.deleteBoard(boardId,userDetails);
         return ApiResponse.successOf(HttpStatus.NO_CONTENT, null);
     }
