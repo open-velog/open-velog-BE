@@ -1,8 +1,6 @@
 package com.openvelog.openvelogbe.common.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.stereotype.Service;
@@ -11,8 +9,9 @@ import java.math.BigInteger;
 
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@RedisHash("BoardViewRecord")
 public class BoardViewRecord {
     @Id
     private Long boardId;
@@ -29,7 +28,7 @@ public class BoardViewRecord {
                 .build();
     }
 
-    public void addViewCount() {
+    public void increaseViewCount() {
         this.viewCount += 1L;
     }
 }

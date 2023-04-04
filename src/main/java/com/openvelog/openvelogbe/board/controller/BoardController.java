@@ -56,7 +56,9 @@ public class BoardController {
             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         // update view count
-        CompletableFuture.runAsync(() -> boardViewRecordService.recordBoardViewCount(boardId));
+        CompletableFuture.runAsync(() ->
+                boardViewRecordService.recordBoardViewCount(boardId)
+        );
 
         return CompletableFuture.supplyAsync(() ->
             ApiResponse.successOf(HttpStatus.OK, boardService.getBoard(boardId, userDetails))
