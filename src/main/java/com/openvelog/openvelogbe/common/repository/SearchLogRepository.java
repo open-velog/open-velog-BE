@@ -27,4 +27,11 @@ public interface SearchLogRepository extends JpaRepository<SearchLog, Long> {
     List<Object[]> getBySearchedDate(LocalDate searchDate);
 
 
+    @Query(value = "SELECT keyword, COUNT(*)" +
+            "FROM search_logs " +
+            "WHERE search_date_time >= :searchDateTime " +
+            "GROUP BY keyword", nativeQuery = true)
+    List<Object[]> getBySearchedDateTime(LocalDateTime searchDateTime);
+
+
 }

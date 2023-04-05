@@ -1,6 +1,7 @@
 package com.openvelog.openvelogbe.searchLog.service;
 
 import com.openvelog.openvelogbe.common.entity.Blog;
+import com.openvelog.openvelogbe.common.entity.Keyword;
 import com.openvelog.openvelogbe.common.entity.KeywordRecord;
 import com.openvelog.openvelogbe.common.entity.SearchLog;
 import com.openvelog.openvelogbe.common.entity.enums.AgeRange;
@@ -19,9 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
