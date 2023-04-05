@@ -62,14 +62,14 @@ public class RedisConfig {
     }
 
 //    @Bean
-    RedisMessageListenerContainer keyExpirationListenerContainer() {
-
-        RedisMessageListenerContainer listenerContainer = new RedisMessageListenerContainer();
-        listenerContainer.setConnectionFactory(redisConnectionFactory());
-
-        listenerContainer.addMessageListener((message, pattern) -> {
-
-            String expiredKey = message.toString();
+//    RedisMessageListenerContainer keyExpirationListenerContainer() {
+//
+//        RedisMessageListenerContainer listenerContainer = new RedisMessageListenerContainer();
+//        listenerContainer.setConnectionFactory(redisConnectionFactory());
+//
+//        listenerContainer.addMessageListener((message, pattern) -> {
+//
+//            String expiredKey = message.toString();
 
 //            if (Boolean.FALSE.equals(redisTemplate().hasKey(expiredKey))) {
 //                throw new RuntimeException("Key does not exist in Redis");
@@ -78,15 +78,15 @@ public class RedisConfig {
 //                throw new RuntimeException("Key is not a Hash type");
 //            }
 
-            List<String> expiredValue = redisTemplate().<String, String>opsForHash().values(expiredKey);
-
-            System.out.println(expiredKey);
-            System.out.println(expiredValue);
-            // event handling comes here
-            redisTemplate().opsForZSet().incrementScore("keywords", "send", 1);
-
-        }, new PatternTopic("__keyevent@*__:expired"));
-
-        return listenerContainer;
-    }
+//            List<String> expiredValue = redisTemplate().<String, String>opsForHash().values(expiredKey);
+//
+//            System.out.println(expiredKey);
+//            System.out.println(expiredValue);
+//            // event handling comes here
+//            redisTemplate().opsForZSet().incrementScore("keywords", "send", 1);
+//
+//        }, new PatternTopic("__keyevent@*__:expired"));
+//
+//        return listenerContainer;
+//    }
 }

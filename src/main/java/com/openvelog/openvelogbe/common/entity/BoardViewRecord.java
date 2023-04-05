@@ -12,6 +12,7 @@ import java.math.BigInteger;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@RedisHash("BoardViewRecord")
 public class BoardViewRecord {
     @Id
     private Long boardId;

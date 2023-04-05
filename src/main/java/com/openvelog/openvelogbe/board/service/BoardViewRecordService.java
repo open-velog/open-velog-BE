@@ -25,10 +25,13 @@ import java.util.concurrent.locks.Lock;
 @Service
 @RequiredArgsConstructor
 public class BoardViewRecordService {
-    private final BoardRepository boardRepository;
-    private final BlogRepository blogRepository;
-    private final BoardViewRecordRedisRepository boardViewRecordRedisRepository;
     private final String VIEW_COUNT_LOCK = "view-count-lock";
+
+    private final BoardRepository boardRepository;
+
+    private final BlogRepository blogRepository;
+
+    private final BoardViewRecordRedisRepository boardViewRecordRedisRepository;
 
     @Qualifier("viewCountLock")
     private final RedisLockRegistry redisViewCountLockRegistry;
@@ -93,7 +96,7 @@ public class BoardViewRecordService {
                         () -> new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
                 );
 
-                BoardViewRecord boardViewRecord = boardViewRecordRedisRepository.findByBoardId(board.getId()).orElse(null);
+                BoardViewRecord boardViewRecord = boardViewRecordRedisRepository.findById(board.getId()).orElse(null);
                 if (boardViewRecord == null) {
                     boardViewRecord = BoardViewRecord.of(board.getId(), board.getBlog().getId(), 1L);
                 } else {
