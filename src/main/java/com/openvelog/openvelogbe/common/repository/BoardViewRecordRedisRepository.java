@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 import java.util.Optional;
 
-@RedisHash("BoardViewRecords")
+@RedisHash("BoardViewRecord")
 public interface BoardViewRecordRedisRepository extends CrudRepository<BoardViewRecord, Long> {
     List<BoardViewRecord> findAll();
 }

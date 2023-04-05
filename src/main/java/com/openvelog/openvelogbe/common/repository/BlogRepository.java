@@ -11,10 +11,14 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.persistence.Tuple;
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
 public interface BlogRepository extends JpaRepository<Blog, Long> {
+    @Query("SELECT b FROM blogs b WHERE b.id=:id")
+    @EntityGraph(attributePaths = "boards.wishes")
+    Optional<Blog> findByIdJPQL(Long id);
 
     @Query("SELECT b, " +
             "SUM(bb.viewCount) as viewCountSum, " +

@@ -21,7 +21,7 @@ public class BoardViewRecord {
 
     private Long viewCount;
 
-    public static BoardViewRecord of(Long boardId, Long blogId, Long viewCount) {
+    public static BoardViewRecord create(Long boardId, Long blogId, Long viewCount) {
         return BoardViewRecord.builder()
                 .boardId(boardId)
                 .blogId(blogId)

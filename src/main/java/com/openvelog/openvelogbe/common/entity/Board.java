@@ -48,7 +48,7 @@ public class Board extends Timestamped {
     }
 
     public void updateViewCount(Long viewCountDifference) {
-        this.viewCount += viewCountDifference;
+        this.viewCount = viewCountDifference;
     }
 
     public static Board create(BoardRequestDto.BoardAdd dto, Blog blog) {

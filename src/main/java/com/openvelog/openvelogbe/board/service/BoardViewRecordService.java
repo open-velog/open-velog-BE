@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.redis.util.RedisLockRegistry;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -68,11 +67,11 @@ public class BoardViewRecordService {
 
 
                     // Update view_count_sum field of boards table
-                    board.updateViewCount(viewCount);
+                    board.updateViewCount(board.getViewCount() + viewCount);
                     boardRepository.save(board);
 
                     // Update view_count field of blogs table
-                    blog.updateViewCountSum(viewCount);
+                    blog.updateViewCountSum(blog.getViewCountSum() + viewCount);
                     blogRepository.save(blog);
 
                     // Remove the key pair in Redis
@@ -100,7 +99,7 @@ public class BoardViewRecordService {
 
                 BoardViewRecord boardViewRecord = boardViewRecordRedisRepository.findById(board.getId()).orElse(null);
                 if (boardViewRecord == null) {
-                    boardViewRecord = BoardViewRecord.of(board.getId(), board.getBlog().getId(), 1L);
+                    boardViewRecord = BoardViewRecord.create(board.getId(), board.getBlog().getId(), 1L);
                 } else {
                     boardViewRecord.increaseViewCount();
                 }

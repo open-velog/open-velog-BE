@@ -29,6 +29,9 @@ public class RedisConfig {
     @Value("${redis.record.view.count.lock.name}")
     private String viewCountLock;
 
+    @Value("${redis.record.wish.count.lock.name}")
+    private String wishCountLock;
+
     @Value("${spring.redis.host}")
     private String redisHost;
 
@@ -61,6 +64,12 @@ public class RedisConfig {
     @Qualifier("viewCountLock")
     public RedisLockRegistry redisViewCountLockRegistry(RedisConnectionFactory redisConnectionFactory) {
         return new RedisLockRegistry(redisConnectionFactory, viewCountLock);
+    }
+
+    @Bean
+    @Qualifier("wishCountLock")
+    public RedisLockRegistry redisWishCountLockRegistry(RedisConnectionFactory redisConnectionFactory) {
+        return new RedisLockRegistry(redisConnectionFactory, wishCountLock);
     }
 
 //    @Bean
