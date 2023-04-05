@@ -17,11 +17,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +34,8 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BlogRepository blogRepository;
     private final KeywordRedisRepository redisRepository;
-
+    private final KafkaTemplate<String, SearchLog> logKafkaTemplate;
+    
     @Transactional
     public BoardResponseDto createBoard(BoardRequestDto.BoardAdd dto, UserDetailsImpl userDetails) {
 
@@ -104,8 +107,11 @@ public class BoardService {
         GetAgeRange getAgeRange = new GetAgeRange();
         AgeRange ageRange = member != null ? getAgeRange.getAge(member) : null;
         Keyword newkeyword = new Keyword (keyword, member, ageRange);
-
         redisRepository.save(newkeyword);
+
+        SearchLog searchLog = SearchLog.create(keyword, member);
+
+        logKafkaTemplate.send("search-log", keyword, searchLog);
 
         return BoardResponseAndCountDto.of(
                 boards.stream().map(board -> BoardResponseDto.of(board, member)).collect(Collectors.toList()),

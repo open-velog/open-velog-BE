@@ -70,6 +70,11 @@ dependencies {
     implementation 'org.opensearch.client:opensearch-rest-client:1.2.1'
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
+    //kafka
+    implementation 'org.apache.kafka:kafka-streams:3.4.0'
+    implementation 'org.apache.kafka:kafka-clients:3.4.0'
+    implementation 'org.springframework.kafka:spring-kafka'
+
 
     // AWS s3
 //    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'

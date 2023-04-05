@@ -1,10 +1,15 @@
 package com.openvelog.openvelogbe.keyword.service;
 
 import com.openvelog.openvelogbe.common.entity.Keyword;
+import com.openvelog.openvelogbe.common.entity.SearchLog;
 import com.openvelog.openvelogbe.common.repository.KeywordRedisRepository;
+import com.openvelog.openvelogbe.common.repository.SearchLogRepository;
 import com.openvelog.openvelogbe.keyword.dto.KeyWordResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +22,8 @@ import java.util.stream.Collectors;
 public class KeywordService {
 
     private final KeywordRedisRepository redisRepository;
+
+    private final SearchLogRepository searchLogRepository;
 
     public List<KeyWordResponseDto> getKeywords(){
         List<Keyword> keywords = redisRepository.findAll();
@@ -49,5 +56,14 @@ public class KeywordService {
                 .sorted((map1, map2) -> Long.compare((Long) map2.get("count"), (Long) map1.get("count")))
                 .collect(Collectors.toList());;
         return result;
+    }
+
+
+    @KafkaListener(topics = "search-log", containerFactory = "kafkaListenerContainerFactory")
+    @Transactional
+    public void listen(List<ConsumerRecord<String, SearchLog>> records) {
+        List<SearchLog> keywordLogList = records.stream().map(ConsumerRecord::value).collect(Collectors.toList());
+
+        searchLogRepository.saveAll(keywordLogList);
     }
 }
