@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
+import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
@@ -29,6 +30,8 @@ public class KafkaConfig {
         ConcurrentKafkaListenerContainerFactory<String, SearchLog> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         factory.setBatchListener(true);
+        ContainerProperties containerProperties = factory.getContainerProperties();
+        containerProperties.setSyncCommits(true);
         return factory;
     }
 
@@ -43,4 +46,5 @@ public class KafkaConfig {
     public KafkaTemplate<String, SearchLog> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
+
 }
