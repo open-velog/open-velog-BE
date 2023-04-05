@@ -92,10 +92,11 @@ public class BlogWishRecordService {
                 Board board = boardRepository.findByIdJPQL(boardId).orElseThrow(
                         () -> new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
                 );
+                Long blogId = board.getBlog().getId();
 
-                Optional<BlogWishRecord> boardWishRecord = blogWishRecordRedisRepository.findById(board.getId());
+                Optional<BlogWishRecord> boardWishRecord = blogWishRecordRedisRepository.findById(blogId);
                 if (boardWishRecord.isEmpty()) {
-                    blogWishRecordRedisRepository.save(BlogWishRecord.create(board.getBlog().getId()));
+                    blogWishRecordRedisRepository.save(BlogWishRecord.create(blogId));
                 }
             } else {
                 log.error("Failed to get the lock at recordBoardWishCount()");
