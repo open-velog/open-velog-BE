@@ -1,11 +1,15 @@
 package com.openvelog.openvelogbe.keyword.service;
 
 import com.openvelog.openvelogbe.common.entity.Keyword;
+import com.openvelog.openvelogbe.common.entity.KeywordRecord;
 import com.openvelog.openvelogbe.common.repository.KeywordRedisRepository;
+import com.openvelog.openvelogbe.common.repository.SearchLogRepository;
 import com.openvelog.openvelogbe.keyword.dto.KeyWordResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +21,7 @@ import java.util.stream.Collectors;
 public class KeywordService {
 
     private final KeywordRedisRepository redisRepository;
+    private final SearchLogRepository searchLogRepository;
 
     public List<KeyWordResponseDto> getKeywords(){
         List<Keyword> keywords = redisRepository.findAll();
@@ -49,5 +54,31 @@ public class KeywordService {
                 .sorted((map1, map2) -> Long.compare((Long) map2.get("count"), (Long) map1.get("count")))
                 .collect(Collectors.toList());;
         return result;
+    }
+
+
+
+    @Cacheable(value = "searchRanking", cacheManager = "cacheManager")
+    public List<Map<String, Object>> keywordRanking2(){
+        LocalDateTime searchDateTime = LocalDateTime.now().minusDays(1);
+        List<Object[]> items = searchLogRepository.getBySearchedDateTime(searchDateTime);
+
+
+        List<Map<String, Object>> keywordRankings = new ArrayList<>();
+
+        for (Object[] item : items) {
+            String keyword = (String) item[0];
+            long count = ((Number) item[1]).intValue();
+
+            Map<String, Object> tempMap = new HashMap<>();
+
+            tempMap.put("keyword", keyword);
+            tempMap.put("count", count);
+            keywordRankings.add(tempMap);
+        }
+        return keywordRankings
+                .stream()
+                .sorted((a,b) -> (int) ((Long) b.get("count") - (Long) a.get("count")))
+                .collect(Collectors.toList());
     }
 }
