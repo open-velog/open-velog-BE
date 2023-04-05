@@ -57,7 +57,7 @@ public class BoardController {
     ) {
         // update view count
         CompletableFuture.runAsync(() ->
-                boardViewRecordService.recordBoardViewCount(boardId)
+            boardViewRecordService.recordBoardViewCount(boardId)
         );
 
         return CompletableFuture.supplyAsync(() ->

@@ -32,7 +32,6 @@ public class BoardWishController {
     ) {
         CompletableFuture.runAsync(() -> blogWishRecordService.recordBlogWishCount(boardId));
 
-
         return ApiResponse.successOf(HttpStatus.OK, boardWishService.setBoardWish(boardId, userDetails));
     }
 
