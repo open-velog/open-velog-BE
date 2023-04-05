@@ -66,22 +66,28 @@ public class BlogService {
                 () -> new EntityNotFoundException(ErrorMessage.NO_BLOG.getMessage())
         );
 
-        return BlogResponseDto.of((Blog)objects[0], (Long)objects[1], (Long)objects[2]);
+        return BlogResponseDto.of((Blog)objects[0]);
     }
 
     @Transactional(readOnly = true)
     public Page<BlogResponseDto> getBlogsByViewCount(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "viewCountSum", "bb.createdAt"));
-        Page<Object[]> blogPage = blogRepository.findAllOrderByBoardsCountedDesc(pageRequest);
-        return blogPage.map(objects -> BlogResponseDto.of((Blog)objects[0], (Long)objects[1], (Long)objects[2]));
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "viewCountSum", "createdAt"));
+        Page<Blog> blogPage = blogRepository.findAllByViewCountSum(pageRequest);
+        return blogPage.map(BlogResponseDto::of);
     }
 
 
     @Transactional(readOnly = true)
     public Page<BlogResponseDto> getBlogsByWishes(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "wishCountSum", "bb.createdAt"));
-        Page<Object[]> blogPage = blogRepository.findAllOrderByBoardsCountedDesc(pageRequest);
-        return blogPage.map(objects -> BlogResponseDto.of((Blog)objects[0], (Long)objects[1], (Long)objects[2]));
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "wishCountSum", "createdAt"));
+        Page<Blog> blogPage = blogRepository.findAllByWishCountSum(pageRequest);
+        return blogPage.map(BlogResponseDto::of);
+    }
+
+    @Transactional
+    public void initializeViewCountSumAndWishCountSum() {
+        blogRepository.updateWishCountSum();
+        blogRepository.updateViewCountSum();
     }
 
 }

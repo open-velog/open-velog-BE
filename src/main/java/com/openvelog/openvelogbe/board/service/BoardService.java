@@ -7,6 +7,7 @@ import com.openvelog.openvelogbe.common.dto.ErrorMessage;
 import com.openvelog.openvelogbe.common.entity.*;
 import com.openvelog.openvelogbe.common.entity.enums.AgeRange;
 import com.openvelog.openvelogbe.common.repository.BlogRepository;
+import com.openvelog.openvelogbe.common.repository.BoardViewRecordRedisRepository;
 import com.openvelog.openvelogbe.common.repository.BoardRepository;
 import com.openvelog.openvelogbe.common.repository.KeywordRedisRepository;
 import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -32,8 +34,8 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BlogRepository blogRepository;
     private final KeywordRedisRepository redisRepository;
-
     private final KafkaTemplate<String, SearchLog> logKafkaTemplate;
+    
     @Transactional
     public BoardResponseDto createBoard(BoardRequestDto.BoardAdd dto, UserDetailsImpl userDetails) {
 
@@ -51,19 +53,17 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponseDto getBoard (Long boardId, UserDetailsImpl userDetails){
+    public BoardResponseDto getBoard(Long boardId, UserDetailsImpl userDetails) {
         Member member = userDetails != null ? userDetails.getUser() : null;
         Board board = boardRepository.findByIdJPQL(boardId).orElseThrow(
                 () -> new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
         );
 
-        board.addViewCount();
-
         return BoardResponseDto.of(board, member);
     }
 
     @Transactional
-    public BoardResponseDto updateBoard (
+    public BoardResponseDto updateBoard(
             Long boardId,
             BoardRequestDto.BoardUpdate dto,
             UserDetailsImpl userDetails
@@ -82,10 +82,7 @@ public class BoardService {
     }
 
     @Transactional
-    public void deleteBoard
-            (Long boardId,
-             UserDetailsImpl userDetails)
-    {
+    public void deleteBoard(Long boardId, UserDetailsImpl userDetails) {
         Board board = boardRepository.findById(boardId).orElseThrow(
                 ()->new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
         );
@@ -139,4 +136,6 @@ public class BoardService {
         Pageable pageable = PageRequest.of(page - 1, size);
         return boardRepository.findBoardsByUserIdJPQL(userId, pageable).map(BoardResponseDto::of);
     }
+
+
 }

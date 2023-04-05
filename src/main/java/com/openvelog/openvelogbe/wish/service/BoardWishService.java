@@ -1,6 +1,7 @@
 package com.openvelog.openvelogbe.wish.service;
 
 import com.openvelog.openvelogbe.common.dto.ErrorMessage;
+import com.openvelog.openvelogbe.common.entity.Blog;
 import com.openvelog.openvelogbe.common.entity.Board;
 import com.openvelog.openvelogbe.common.entity.BoardWishMember;
 import com.openvelog.openvelogbe.common.repository.BoardRepository;
@@ -28,13 +29,16 @@ public class BoardWishService {
         );
 
         Optional<BoardWishMember> boardWishMember = boardWishMemberRepository.findByMemberAndBoard(userDetails.getUser(), board);
+        Blog blog = board.getBlog();
 
         if (!boardWishMember.isPresent()) {
             boardWishMemberRepository.save(BoardWishMember.create(board, userDetails.getUser()));
+            blog.updateWishCountSum(blog.getWishCountSum() + 1);
             return true;
         }
 
         boardWishMemberRepository.deleteById(boardWishMember.get().getId());
+        blog.updateWishCountSum(blog.getWishCountSum() - 1);
         return false;
     }
 
