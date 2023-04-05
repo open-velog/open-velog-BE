@@ -20,24 +20,29 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-
 @RedisHash("keyword")
 public class Keyword {
     public static final Long DEFAULT_TTL = 60*60*24L;
+
     @Id
     private String id;
+
     @Indexed
     private String keyword;
+
     private Long memberId;
+
     private Gender gender;
+
     private AgeRange ageRange;
+
     private LocalDate createdAt;
 
     @TimeToLive
-    private Long expiration =DEFAULT_TTL;
+    private Long expiration = DEFAULT_TTL;
 
     @Builder
-    public Keyword (String keyword, Member member, AgeRange ageRange){
+    public Keyword(String keyword, Member member, AgeRange ageRange){
         this.keyword = keyword;
         if (member != null) {
             this.memberId = member.getId();

@@ -3,6 +3,7 @@ package com.openvelog.openvelogbe.board.controller;
 import com.openvelog.openvelogbe.board.dto.BoardRequestDto;
 import com.openvelog.openvelogbe.board.dto.BoardResponseAndCountDto;
 import com.openvelog.openvelogbe.board.dto.BoardResponseDto;
+import com.openvelog.openvelogbe.board.service.BoardViewRecordService;
 import com.openvelog.openvelogbe.board.service.BoardService;
 import com.openvelog.openvelogbe.common.dto.ApiResponse;
 import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
@@ -25,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
+    private final BoardViewRecordService boardViewRecordService;
 
     @PostMapping
     @Operation(summary = "게시글 작성", description ="해당 블로그Id를 갖는 블로그에 게시글 작성")
@@ -49,18 +51,27 @@ public class BoardController {
 
     @GetMapping("/{boardId}")
     @Operation(summary = "게시글 조회", description ="특정 boardId를 갖는 단일 게시글 조회")
-    public ApiResponse<BoardResponseDto> getBoard(
+    public CompletableFuture<ApiResponse<BoardResponseDto>> getBoard(
             @PathVariable Long boardId,
-            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return ApiResponse.successOf(HttpStatus.OK, boardService.getBoard(boardId, userDetails));
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        // update view count
+        CompletableFuture.runAsync(() ->
+                boardViewRecordService.recordBoardViewCount(boardId)
+        );
+
+        return CompletableFuture.supplyAsync(() ->
+            ApiResponse.successOf(HttpStatus.OK, boardService.getBoard(boardId, userDetails))
+        );
     }
 
     @PutMapping("/{boardId}")
     @Operation(summary = "게시글 수정", description ="특정 boardId의 게시글 수정")
-    public ApiResponse<BoardResponseDto> updateBoard
-            (@PathVariable Long boardId,
-                    @RequestBody @Valid BoardRequestDto.BoardUpdate dto,
-             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ApiResponse<BoardResponseDto> updateBoard(
+            @PathVariable Long boardId,
+            @RequestBody @Valid BoardRequestDto.BoardUpdate dto,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
         return ApiResponse.successOf(HttpStatus.CREATED, boardService.updateBoard(boardId, dto, userDetails));
     }
 
@@ -68,7 +79,8 @@ public class BoardController {
     @Operation(summary = "게시글 삭제", description ="특정 boardId의 게시글 삭제")
     public ApiResponse<BoardResponseDto> deleteStudyBoard(
             @PathVariable Long boardId,
-            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
         boardService.deleteBoard(boardId,userDetails);
         return ApiResponse.successOf(HttpStatus.NO_CONTENT, null);
     }

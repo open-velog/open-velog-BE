@@ -2,6 +2,7 @@ package com.openvelog.openvelogbe.common.config;
 
 
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.integration.redis.util.RedisLockRegistry;
 
 import java.util.List;
 import java.util.Map;
@@ -24,11 +26,18 @@ import java.util.Map;
 @Configuration
 @EnableRedisRepositories(enableKeyspaceEvents = RedisKeyValueAdapter.EnableKeyspaceEvents.ON_STARTUP)
 public class RedisConfig {
+    @Value("${redis.record.view.count.lock.name}")
+    private String viewCountLock;
+
+    @Value("${redis.record.wish.count.lock.name}")
+    private String wishCountLock;
 
     @Value("${spring.redis.host}")
     private String redisHost;
+
     @Value("${spring.redis.password}")
     public String password;
+
     @Value("${spring.redis.port}")
     private int redisPort;
 
@@ -51,15 +60,27 @@ public class RedisConfig {
         return redisTemplate;
     }
 
+    @Bean
+    @Qualifier("viewCountLock")
+    public RedisLockRegistry redisViewCountLockRegistry(RedisConnectionFactory redisConnectionFactory) {
+        return new RedisLockRegistry(redisConnectionFactory, viewCountLock);
+    }
+
+    @Bean
+    @Qualifier("wishCountLock")
+    public RedisLockRegistry redisWishCountLockRegistry(RedisConnectionFactory redisConnectionFactory) {
+        return new RedisLockRegistry(redisConnectionFactory, wishCountLock);
+    }
+
 //    @Bean
-    RedisMessageListenerContainer keyExpirationListenerContainer() {
-
-        RedisMessageListenerContainer listenerContainer = new RedisMessageListenerContainer();
-        listenerContainer.setConnectionFactory(redisConnectionFactory());
-
-        listenerContainer.addMessageListener((message, pattern) -> {
-
-            String expiredKey = message.toString();
+//    RedisMessageListenerContainer keyExpirationListenerContainer() {
+//
+//        RedisMessageListenerContainer listenerContainer = new RedisMessageListenerContainer();
+//        listenerContainer.setConnectionFactory(redisConnectionFactory());
+//
+//        listenerContainer.addMessageListener((message, pattern) -> {
+//
+//            String expiredKey = message.toString();
 
 //            if (Boolean.FALSE.equals(redisTemplate().hasKey(expiredKey))) {
 //                throw new RuntimeException("Key does not exist in Redis");
@@ -68,15 +89,15 @@ public class RedisConfig {
 //                throw new RuntimeException("Key is not a Hash type");
 //            }
 
-            List<String> expiredValue = redisTemplate().<String, String>opsForHash().values(expiredKey);
-
-            System.out.println(expiredKey);
-            System.out.println(expiredValue);
-            // event handling comes here
-            redisTemplate().opsForZSet().incrementScore("keywords", "send", 1);
-
-        }, new PatternTopic("__keyevent@*__:expired"));
-
-        return listenerContainer;
-    }
+//            List<String> expiredValue = redisTemplate().<String, String>opsForHash().values(expiredKey);
+//
+//            System.out.println(expiredKey);
+//            System.out.println(expiredValue);
+//            // event handling comes here
+//            redisTemplate().opsForZSet().incrementScore("keywords", "send", 1);
+//
+//        }, new PatternTopic("__keyevent@*__:expired"));
+//
+//        return listenerContainer;
+//    }
 }

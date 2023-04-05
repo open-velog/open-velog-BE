@@ -37,6 +37,6 @@ public class KeywordController {
     @SecurityRequirements()
     @Operation(summary = "24시간 내의 키워드 검색 순위", description ="24시간 내의 키워드 검색 순위")
     public ApiResponse keywordRanking() {
-        return ApiResponse.successOf(HttpStatus.OK,keywordService.keywordRanking());
+        return ApiResponse.successOf(HttpStatus.OK,keywordService.keywordRanking2());
     }
 }
