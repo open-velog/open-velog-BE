@@ -31,4 +31,8 @@ public class BoardViewRecord {
     public void increaseViewCount() {
         this.viewCount += 1L;
     }
+
+    public void decreaseViewCount(Long viewCount) {
+        this.viewCount -= viewCount;
+    }
 }

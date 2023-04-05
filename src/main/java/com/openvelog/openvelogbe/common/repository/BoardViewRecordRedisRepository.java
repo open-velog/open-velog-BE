@@ -14,12 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
 @Component
 public class BoardViewRecordRedisRepository {
     public static final String BOARD_VIEW_RECORD_KEY_PREFIX = "BoardViewRecord:";
+//    public static final String BOARD_VIEW_RECORD_KEY_LOCK_PREFIX = "BoardViewRecord:LOCK:";
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -29,7 +31,7 @@ public class BoardViewRecordRedisRepository {
         if (keys != null) {
             List<String> values = redisTemplate.opsForValue().multiGet(keys);
             for (String value : values) {
-                if (value == null) {
+                if (value == null || value.equals("")) {
                     continue;
                 }
 

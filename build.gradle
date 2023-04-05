@@ -56,7 +56,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.integration:spring-integration-redis:5.5.0'
 
     //OpenSearchService
     implementation 'com.amazonaws:aws-java-sdk-core:1.12.76'
