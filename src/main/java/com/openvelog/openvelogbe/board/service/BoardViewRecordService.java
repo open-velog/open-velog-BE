@@ -65,7 +65,6 @@ public class BoardViewRecordService {
                             () -> new EntityNotFoundException(ErrorMessage.BLOG_NOT_FOUND.getMessage())
                     );
 
-
                     // Update view_count_sum field of boards table
                     board.updateViewCount(board.getViewCount() + viewCount);
                     boardRepository.save(board);
