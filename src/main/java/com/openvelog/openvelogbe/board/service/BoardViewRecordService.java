@@ -10,6 +10,7 @@ import com.openvelog.openvelogbe.common.repository.BoardViewRecordRedisRepositor
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.redis.util.RedisLockRegistry;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,7 +26,8 @@ import java.util.concurrent.locks.Lock;
 @Service
 @RequiredArgsConstructor
 public class BoardViewRecordService {
-    private final String VIEW_COUNT_LOCK = "view-count-lock";
+    @Value("${redis.record.view.count.lock.name}")
+    private String viewCountLock;
 
     private final BoardRepository boardRepository;
 
@@ -39,7 +41,7 @@ public class BoardViewRecordService {
     @Transactional
     @Scheduled(fixedDelay = 10000) // Run every 10 seconds
     void updateBoardViewCounts() {
-        Lock lock = redisViewCountLockRegistry.obtain(VIEW_COUNT_LOCK);
+        Lock lock = redisViewCountLockRegistry.obtain(viewCountLock);
         try {
             boolean acquired = lock.tryLock(10000, TimeUnit.MILLISECONDS);
             if (acquired) {
@@ -88,7 +90,7 @@ public class BoardViewRecordService {
     }
 
     public void recordBoardViewCount(Long boardId) {
-        Lock lock = redisViewCountLockRegistry.obtain(VIEW_COUNT_LOCK);
+        Lock lock = redisViewCountLockRegistry.obtain(viewCountLock);
         try {
             boolean acquired = lock.tryLock(5000, TimeUnit.MILLISECONDS);
             if (acquired) {

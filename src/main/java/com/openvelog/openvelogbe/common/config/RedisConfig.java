@@ -26,6 +26,8 @@ import java.util.Map;
 @Configuration
 @EnableRedisRepositories(enableKeyspaceEvents = RedisKeyValueAdapter.EnableKeyspaceEvents.ON_STARTUP)
 public class RedisConfig {
+    @Value("${redis.record.view.count.lock.name}")
+    private String viewCountLock;
 
     @Value("${spring.redis.host}")
     private String redisHost;
@@ -58,7 +60,7 @@ public class RedisConfig {
     @Bean
     @Qualifier("viewCountLock")
     public RedisLockRegistry redisViewCountLockRegistry(RedisConnectionFactory redisConnectionFactory) {
-        return new RedisLockRegistry(redisConnectionFactory, "view-count-lock");
+        return new RedisLockRegistry(redisConnectionFactory, viewCountLock);
     }
 
 //    @Bean
