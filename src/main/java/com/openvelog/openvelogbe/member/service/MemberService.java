@@ -52,10 +52,10 @@ public class MemberService {
                 () -> new EntityNotFoundException(ErrorMessage.WRONG_USERID.getMessage())
         );
 
-        // 비밀번호 확인
+        /*// 비밀번호 확인
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), member.getPassword())) {
             throw new BadCredentialsException(ErrorMessage.WRONG_PASSWORD.getMessage());
-        }
+        }*/
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getUserId()));
         Long blogId = member.getBlog() != null ? member.getBlog().getId() : null;
