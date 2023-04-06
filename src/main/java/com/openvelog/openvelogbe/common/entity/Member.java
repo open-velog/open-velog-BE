@@ -66,4 +66,5 @@ public class Member extends Timestamped {
         this.getWishes().forEach(BoardWishMember::setMemberNull);
     }
 
+
 }

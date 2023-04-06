@@ -30,4 +30,6 @@ public abstract class DummyGenerator<E, R extends JpaRepository> {
     public abstract E generateDummyEntityOfThis();
 
     abstract public boolean insertDummiesIntoDatabase(int dummyCount) throws InterruptedException;
+    //public abstract List<E> createDummyMembersSaveToDBAndSaveToCSV(int count, String filePath);
+
 }

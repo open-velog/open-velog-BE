@@ -4,11 +4,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "spring.elasticsearch")
 @ConfigurationPropertiesScan(basePackages = "com.openvelog.openvelogbe")
+//@Profile("dev")
 //@PropertySource("classpath:application-dev.properties")
 public class OpenSearchProperties {
     private final Rest rest = new Rest();

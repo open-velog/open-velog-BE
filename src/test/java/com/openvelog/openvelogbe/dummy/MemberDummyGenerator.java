@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,4 +93,22 @@ public class MemberDummyGenerator extends DummyGenerator<Member, MemberRepositor
 
         return true;
     }
+
+    public List<Member> createDummyMembersSaveToDBAndSaveToCSV(int count, String filePath) {
+        List<Member> members = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            members.add(generateDummyEntityOfThis());
+        }
+        repository.saveAll(members);
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filePath), StandardCharsets.UTF_8)) {
+            for (Member member : members) {
+                writer.write(member.getUserId() + "," + member.getPassword() + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return members;
+    }
+
 }
