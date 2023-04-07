@@ -19,11 +19,13 @@ public class BoardDocumentDto {
     @Schema(example = "게시글 내용")
     private String content;
     @Schema(example = "생성 날짜")
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
     @Schema(example = "수정 날짜")
-    private LocalDateTime modified_at;
+    private LocalDateTime modifiedAt;
     @Schema(example = "게시글 조회 수")
-    private Long view_count;
+    private Long viewCount;
+    @Schema(example = "게시글 좋아요 수")
+    private Integer wishCount;
 
 
 
@@ -32,9 +34,11 @@ public class BoardDocumentDto {
                 .id(boardDocument.getId())
                 .title(boardDocument.getTitle())
                 .content(boardDocument.getContent())
-                .created_at(boardDocument.getCreated_at())
-                .modified_at(boardDocument.getModified_at())
-                .view_count(boardDocument.getView_count());
+                .createdAt(boardDocument.getCreated_at())
+                .modifiedAt(boardDocument.getModified_at())
+                .viewCount(boardDocument.getView_count())
+                .wishCount(boardDocument.getWish_count());
+
         return builder.build();
     }
 

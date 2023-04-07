@@ -37,12 +37,16 @@ public class BoardDocument extends Timestamped {
     @Field(type = FieldType.Long)
     private Long view_count;
 
+    @Field(type = FieldType.Long)
+    private Integer wish_count;
+
     public static BoardDocument create (Board board) {
         return builder()
                 .id(board.getId())
                 .title(board.getTitle())
                 .content(board.getContent())
                 .view_count(board.getViewCount())
+                .wish_count(board.getWishes().size())
                 .created_at(board.getCreatedAt())
                 .modified_at(board.getModifiedAt())
                 .build();
