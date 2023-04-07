@@ -1,7 +1,8 @@
 /*
 package com.openvelog.openvelogbe.common.util;
 
-import com.openvelog.openvelogbe.boardSearch.service.BoardSearchService;
+
+import com.openvelog.openvelogbe.openSearch.service.OpenSearchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -13,18 +14,18 @@ import java.io.IOException;
 @Component
 @EnableScheduling
 public class BoardSearchScheduler {
-    private final BoardSearchService boardSearchService;
+    private final OpenSearchService openSearchService;
     private static final Logger logger = LoggerFactory.getLogger(BoardSearchScheduler.class);
 
-    public BoardSearchScheduler(BoardSearchService boardSearchService) {
-        this.boardSearchService = boardSearchService;
+    public BoardSearchScheduler(OpenSearchService openSearchService) {
+        this.openSearchService = openSearchService;
     }
 
     @Scheduled(fixedRate = 10000)
     public void indexAllBoards() {
         try {
-            logger.info("BoardSearchScheduler is executed");
-            boardSearchService.indexAllBoards();
+            logger.info("OpenSearchService is executed");
+            openSearchService.indexAllBoards();
         } catch (IOException e) {
             logger.error("스케쥴러 실행 시 예외 발생", e);
         }
