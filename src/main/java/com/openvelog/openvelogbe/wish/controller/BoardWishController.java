@@ -2,6 +2,7 @@ package com.openvelog.openvelogbe.wish.controller;
 
 import com.openvelog.openvelogbe.common.dto.ApiResponse;
 import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
+import com.openvelog.openvelogbe.wish.handler.BlogWishEventHandler;
 import com.openvelog.openvelogbe.wish.service.BlogWishRecordService;
 import com.openvelog.openvelogbe.wish.service.BoardWishService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class BoardWishController {
 
-    private final BlogWishRecordService blogWishRecordService;
+    private final BlogWishEventHandler blogWishEventHandler;
 
     private final BoardWishService boardWishService;
 
@@ -30,7 +31,9 @@ public class BoardWishController {
             @RequestParam Long boardId,
             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        CompletableFuture.runAsync(() -> blogWishRecordService.recordBlogWishCount(boardId));
+        CompletableFuture.runAsync(() ->
+            blogWishEventHandler.handleBlogWishEvent(boardId)
+        );
 
         return ApiResponse.successOf(HttpStatus.OK, boardWishService.setBoardWish(boardId, userDetails));
     }
