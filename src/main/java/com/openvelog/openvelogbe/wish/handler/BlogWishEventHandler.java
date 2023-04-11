@@ -10,6 +10,7 @@ import com.openvelog.openvelogbe.wish.service.BlogWishRecordService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -46,8 +47,12 @@ public class BlogWishEventHandler {
         log.info("Starts updating " + blogWishRecords.size() + " blogs' wish_count_sum from Scheduler...");
 
         // Update view count to on-disk database
-        for (BlogWishRecord boardViewRecord : blogWishRecords) {
-            Long blogId = boardViewRecord.getBlogId();
+        for (BlogWishRecord blogWishRecord : blogWishRecords) {
+            if (blogWishRecord == null) {
+                continue;
+            }
+
+            Long blogId = blogWishRecord.getBlogId();
 
             lockHandler.runOnLock(blogWishCountKey + blogId, waitTime, leaseTime, () -> blogWishRecordService.updateBlogWishCounts(blogId));
         }

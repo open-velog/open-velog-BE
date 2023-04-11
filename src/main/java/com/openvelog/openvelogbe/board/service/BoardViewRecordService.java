@@ -25,7 +25,7 @@ public class BoardViewRecordService {
     private final BoardViewRecordRedisRepository boardViewRecordRedisRepository;
 
     @Transactional
-    public void updateBoardViewCounts(Long blogId, Long boardId) {
+    public Void updateBoardViewCounts(Long blogId, Long boardId) {
         BoardViewRecord boardViewRecord = boardViewRecordRedisRepository.findById(boardId).orElse(null);
 
         Board board = boardRepository.findById(boardId).orElseThrow(
@@ -46,10 +46,12 @@ public class BoardViewRecordService {
 
         // Remove the key pair in Redis
         boardViewRecordRedisRepository.deleteById(boardViewRecord.getBoardId());
+
+        return null;
     }
 
     @Transactional
-    public void recordBoardViewCount(Long boardId) {
+    public Void recordBoardViewCount(Long boardId) {
         Board board = boardRepository.findByIdJPQL(boardId).orElseThrow(
                 () -> new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
         );
@@ -61,5 +63,7 @@ public class BoardViewRecordService {
             boardViewRecord.increaseViewCount();
         }
         boardViewRecordRedisRepository.save(boardViewRecord);
+
+        return null;
     }
 }

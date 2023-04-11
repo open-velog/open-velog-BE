@@ -19,11 +19,13 @@ public class LockHandler {
     static String REDISSON_KEY_PREFIX = "RLOCK:";
 
     public <T> T runOnLock(String key, Long waitTime, Long leaseTime, Supplier<T> execute) {
+        T result = null;
+
         RLock lock = redissonClient.getLock(REDISSON_KEY_PREFIX + key);
         try {
             boolean acquired = lock.tryLock(waitTime, leaseTime, TimeUnit.MILLISECONDS);
             if (acquired == true) {
-                return execute.get();
+                result = execute.get();
             } else {
                 log.error("lock key acquiring failed on {}", key);
                 throw new RuntimeException(ErrorMessage.REDIS_KEY_ACQUIRED_FAILED.getMessage());
@@ -33,22 +35,8 @@ public class LockHandler {
         } finally {
             lock.unlock();
         }
+
+        return result;
     }
 
-    public void runOnLock(String key, Long waitTime, Long leaseTime, Runnable execute) {
-        RLock lock = redissonClient.getLock(REDISSON_KEY_PREFIX + key);
-        try {
-            boolean acquired = lock.tryLock(waitTime, leaseTime, TimeUnit.MILLISECONDS);
-            if (acquired == true) {
-                execute.run();
-            } else {
-                log.error("lock key acquiring failed on {}", key);
-                throw new RuntimeException(ErrorMessage.REDIS_KEY_ACQUIRED_FAILED.getMessage());
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(ErrorMessage.REDIS_TRY_LOCK_FAILED.getMessage());
-        } finally {
-            lock.unlock();
-        }
-    }
 }

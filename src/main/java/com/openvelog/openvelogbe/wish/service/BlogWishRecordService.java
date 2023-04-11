@@ -22,7 +22,7 @@ public class BlogWishRecordService {
     private final BlogWishRecordRedisRepository blogWishRecordRedisRepository;
 
     @Transactional
-    public void updateBlogWishCounts(Long blogId) {
+    public Void updateBlogWishCounts(Long blogId) {
         // Update the column `wish_count_sum` in table `blogs` where id=blogId
         Blog blog = blogRepository.findByIdJPQL(blogId).orElseThrow(
                 () -> new EntityNotFoundException(ErrorMessage.BLOG_NOT_FOUND.getMessage())
@@ -36,13 +36,17 @@ public class BlogWishRecordService {
 
         // Remove the key pair in Redis
         blogWishRecordRedisRepository.deleteById(blogId);
+
+        return null;
     }
 
     @Transactional
-    public void recordBlogWishCount(Long blogId) {
+    public Void recordBlogWishCount(Long blogId) {
         Optional<BlogWishRecord> boardWishRecord = blogWishRecordRedisRepository.findById(blogId);
         if (boardWishRecord.isEmpty()) {
             blogWishRecordRedisRepository.save(BlogWishRecord.create(blogId));
         }
+
+        return null;
     }
 }
