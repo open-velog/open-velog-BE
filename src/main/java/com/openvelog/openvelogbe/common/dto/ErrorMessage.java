@@ -20,7 +20,9 @@ public enum ErrorMessage {
     WRONG_USERID("userId가 일치하지 않습니다."),
     WRONG_PASSWORD("패스워드가 틀렸습니다."),
     WRONG_JWT_TOKEN("JWT Token이 잘못되었습니다."),
-    NO_BLOG("블로그가 없습니다.");
+    NO_BLOG("블로그가 없습니다."),
+    REDIS_TRY_LOCK_FAILED("Redis tryLock 함수를 실행하는 데 오류가 발생했습니다."),
+    REDIS_KEY_ACQUIRED_FAILED("Redis lock key를 얻는 데 실패했습니다."),;
 
     private final String message;
 
