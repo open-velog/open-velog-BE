@@ -25,9 +25,6 @@ import java.util.concurrent.locks.Lock;
 @Service
 @RequiredArgsConstructor
 public class BoardViewRecordService {
-    @Value("${redis.record.view.count.lock.name}")
-    private String viewCountLock;
-
     private final BoardRepository boardRepository;
 
     private final BlogRepository blogRepository;
@@ -37,58 +34,61 @@ public class BoardViewRecordService {
     @Qualifier("viewCountLock")
     private final RedisLockRegistry redisViewCountLockRegistry;
 
-    @Transactional
-    @Scheduled(fixedDelay = 10000) // Run every 10 seconds
+    @Scheduled(fixedDelay = 3000) // Run every 3 seconds
     void updateBoardViewCounts() {
-        Lock lock = redisViewCountLockRegistry.obtain(viewCountLock);
-        try {
-            boolean acquired = lock.tryLock(10000, TimeUnit.MILLISECONDS);
-            if (acquired) {
-                // Get all view records from Redis
-                List<BoardViewRecord> boardViewRecords = boardViewRecordRedisRepository.findAll();
-                if (boardViewRecords != null && boardViewRecords.size() == 0) {
-                    return;
-                }
+        // Get all view records from Redis
+        List<BoardViewRecord> boardViewRecords = boardViewRecordRedisRepository.findAll();
+        if (boardViewRecords != null && boardViewRecords.size() == 0) {
+            return;
+        }
 
-                log.info("Starts updating " + boardViewRecords.size() + " boards view count from Scheduler...");
+        log.info("Starts updating " + boardViewRecords.size() + " boards view count from Scheduler...");
 
-                // Update view count to on-disk database
-                for (BoardViewRecord boardViewRecord : boardViewRecords) {
-                    Long viewCount = boardViewRecord.getViewCount();
-                    Long boardId = boardViewRecord.getBoardId();
-                    Long blogId = boardViewRecord.getBlogId();
+        // Update view count to on-disk database
+        for (BoardViewRecord boardViewRecord : boardViewRecords) {
+            Long viewCount = boardViewRecord.getViewCount();
+            Long boardId = boardViewRecord.getBoardId();
+            Long blogId = boardViewRecord.getBlogId();
+
+            Lock lock = redisViewCountLockRegistry.obtain(Long.toString(boardId));
+            try {
+                boolean acquired = lock.tryLock(10000, TimeUnit.MILLISECONDS);
+                if (acquired) {
+                    boardViewRecord = boardViewRecordRedisRepository.findById(boardId).orElse(null);
 
                     Board board = boardRepository.findById(boardId).orElseThrow(
                             () -> new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
                     );
+
                     Blog blog = blogRepository.findById(blogId).orElseThrow(
                             () -> new EntityNotFoundException(ErrorMessage.BLOG_NOT_FOUND.getMessage())
                     );
 
                     // Update view_count_sum field of boards table
-                    board.updateViewCount(board.getViewCount() + viewCount);
+                    board.updateViewCount(board.getViewCount() + boardViewRecord.getViewCount());
                     boardRepository.save(board);
 
                     // Update view_count field of blogs table
-                    blog.updateViewCountSum(blog.getViewCountSum() + viewCount);
+                    blog.updateViewCountSum(blog.getViewCountSum() + boardViewRecord.getViewCount());
                     blogRepository.save(blog);
 
                     // Remove the key pair in Redis
                     boardViewRecordRedisRepository.deleteById(boardViewRecord.getBoardId());
+                } else {
+                    log.error("Failed to get the lock at updateBoardViewCounts()");
                 }
-                log.info("Finished updating board view count from Scheduler!");
-            } else {
-                log.error("Failed to get the lock at updateBoardViewCounts()");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                lock.unlock();
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } finally {
-            lock.unlock();
+
         }
+        log.info("Finished updating board view count from Scheduler!");
     }
 
     public void recordBoardViewCount(Long boardId) {
-        Lock lock = redisViewCountLockRegistry.obtain(viewCountLock);
+        Lock lock = redisViewCountLockRegistry.obtain(Long.toString(boardId));
         try {
             boolean acquired = lock.tryLock(5000, TimeUnit.MILLISECONDS);
             if (acquired) {

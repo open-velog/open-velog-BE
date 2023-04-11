@@ -37,28 +37,25 @@ public class BlogWishRecordService {
     private final RedisLockRegistry redisWishCountLockRegistry;
 
     @Transactional
-    @Scheduled(fixedDelay = 10000) // Run every 10 seconds
+    @Scheduled(fixedDelay = 3000) // Run every 3 seconds
     void updateBlogWishCounts() {
-        Lock lock = redisWishCountLockRegistry.obtain(wishCountLock);
-        try {
-            boolean acquired = lock.tryLock(10000, TimeUnit.MILLISECONDS);
-            if (acquired) {
-                // Get all wish records from Redis
-                List<BlogWishRecord> blogWishRecords = blogWishRecordRedisRepository.findAll();
-                if (blogWishRecords != null && blogWishRecords.size() == 0) {
-                    return;
-                }
 
-                log.info("Starts updating " + blogWishRecords.size() + " boards wish count from Scheduler...");
+        // Get all wish records from Redis
+        List<BlogWishRecord> blogWishRecords = blogWishRecordRedisRepository.findAll();
+        if (blogWishRecords != null && blogWishRecords.size() == 0) {
+            return;
+        }
 
-                // Update wish count to on-disk database
-                for (BlogWishRecord blogWishRecord : blogWishRecords) {
-                    Long blogId = blogWishRecord.getBlogId();
+        log.info("Starts updating " + blogWishRecords.size() + " boards wish count from Scheduler...");
 
+        // Update wish count to on-disk database
+        for (BlogWishRecord blogWishRecord : blogWishRecords) {
+            Long blogId = blogWishRecord.getBlogId();
+            Lock lock = redisWishCountLockRegistry.obtain(blogId);
+            try {
+                boolean acquired = lock.tryLock(10000, TimeUnit.MILLISECONDS);
+                if (acquired) {
                     // Update the column `wish_count_sum` in table `blogs` where id=blogId
-                    // TODO: Use entity graph due to Lazy Initialization Exception.
-                    //  But, Need to know why Lazy Initialization Exception happens.
-                    //  So to refactor further more
                     Blog blog = blogRepository.findByIdJPQL(blogId).orElseThrow(
                             () -> new EntityNotFoundException(ErrorMessage.BLOG_NOT_FOUND.getMessage())
                     );
@@ -71,35 +68,32 @@ public class BlogWishRecordService {
 
                     // Remove the key pair in Redis
                     blogWishRecordRedisRepository.deleteById(blogId);
+                } else {
+                    log.error("Failed to get the lock at updateBoardWishCounts()");
                 }
-
-                log.info("Finished updating board wish count from Scheduler!");
-            } else {
-                log.error("Failed to get the lock at updateBoardWishCounts()");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                lock.unlock();
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } finally {
-            lock.unlock();
+            log.info("Finished updating board wish count from Scheduler!");
         }
     }
 
     public void recordBlogWishCount(Long boardId) {
-        Lock lock = redisWishCountLockRegistry.obtain(wishCountLock);
-        try {
-            boolean acquired = lock.tryLock(5000, TimeUnit.MILLISECONDS);
-            if (acquired) {
-                Board board = boardRepository.findByIdJPQL(boardId).orElseThrow(
-                        () -> new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
-                );
-                Long blogId = board.getBlog().getId();
+        Board board = boardRepository.findByIdJPQL(boardId).orElseThrow(
+                () -> new EntityNotFoundException(ErrorMessage.BOARD_NOT_FOUND.getMessage())
+        );
+        Long blogId = board.getBlog().getId();
 
-                Optional<BlogWishRecord> boardWishRecord = blogWishRecordRedisRepository.findById(blogId);
-                if (boardWishRecord.isEmpty()) {
-                    blogWishRecordRedisRepository.save(BlogWishRecord.create(blogId));
-                }
-            } else {
-                log.error("Failed to get the lock at recordBoardWishCount()");
+        Lock lock = redisWishCountLockRegistry.obtain(blogId);
+        try {
+            Optional<BlogWishRecord> boardWishRecord = blogWishRecordRedisRepository.findById(blogId);
+            boolean acquired = lock.tryLock(5000, TimeUnit.MILLISECONDS);
+            if (acquired == false) {
+                log.error("Failed to get the lock at recordBlogWishCount()");
+            } else if (boardWishRecord.isEmpty()) {
+                blogWishRecordRedisRepository.save(BlogWishRecord.create(blogId));
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
