@@ -7,10 +7,12 @@ import com.openvelog.openvelogbe.common.util.LockHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
@@ -41,6 +43,10 @@ public class BoardViewEventHandler {
 
         // Update view count to on-disk database
         for (BoardViewRecord boardViewRecord : boardViewRecords) {
+            if (boardViewRecord == null) {
+                continue;
+            }
+
             Long boardId = boardViewRecord.getBoardId();
             Long blogId = boardViewRecord.getBlogId();
 
