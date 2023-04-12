@@ -1,6 +1,7 @@
 package com.openvelog.openvelogbe.common.repository;
 
 import com.openvelog.openvelogbe.common.entity.Board;
+import com.openvelog.openvelogbe.common.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -31,6 +32,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             ") AS combined_results", nativeQuery = true)
     Long searchTitleOrContentOrBlogTitleCount(String keyword);
     Optional<Board> findById(Long boardId);
+    Optional<Board> findByTitle(String title);
 
     @Query("select b from boards b where b.id = :boardId")
     @EntityGraph(attributePaths = {
