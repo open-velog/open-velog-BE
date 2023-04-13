@@ -42,7 +42,7 @@ public class CrawlingMysqlDatabaseConfig {
     @Value("${crawling.datasource.password}")
     private String password;
 
-    @Bean
+    @Bean(name = "crawlingMysqlDataSource")
     public DataSource CrawlingMysqlDataSource() {
         DataSourceProperties dataSourceProperties = new DataSourceProperties();
         dataSourceProperties.setDriverClassName(driverClassName);

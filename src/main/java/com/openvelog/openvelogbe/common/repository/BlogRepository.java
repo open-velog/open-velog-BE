@@ -9,12 +9,13 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.Tuple;
 import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
-
+@Repository
 public interface BlogRepository extends JpaRepository<Blog, Long> {
     @Query("SELECT b FROM blogs b WHERE b.id=:id")
     @EntityGraph(attributePaths = "boards.wishes")
