@@ -57,4 +57,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findBoardsByBlogIdJPQL(Long blogId, Pageable pageable);
 
     Page<Board> findByIdGreaterThanOrderByIdAsc(Long lastProcessedBoardId, Pageable pageable);
+
+
+
 }
