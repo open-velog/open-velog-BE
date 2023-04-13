@@ -60,7 +60,7 @@ dependencies {
 
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.integration:spring-integration-redis:5.5.0'
+    implementation 'org.redisson:redisson:3.16.1'
 
     //OpenSearchService
     implementation 'com.amazonaws:aws-java-sdk-core:1.12.76'
