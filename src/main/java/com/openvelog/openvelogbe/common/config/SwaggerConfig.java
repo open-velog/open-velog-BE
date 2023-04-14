@@ -17,7 +17,7 @@ class SwaggerConfig {
 
         Info info = new Info()
                 .version("v1.0.0")
-                .title("REVIEW KURLY 🖋")
+                .title("Open-velog 🖋")
                 .description("API Description");
 
         // SecuritySecheme명
