@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.openvelog.openvelogbe.common.entity.Member;
+import com.openvelog.openvelogbe.common.entity.SearchLog;
+import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
 import com.openvelog.openvelogbe.openSearch.dto.BoardDocumentDto;
 import com.openvelog.openvelogbe.openSearch.dto.BoardDocumentResponseAndCountDto;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import org.opensearch.client.Response;
 import org.opensearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayOutputStream;
@@ -28,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
 
 
 @Service
@@ -35,6 +40,8 @@ import java.util.List;
 public class OpenSearchService {
 
     private final BoardRepository boardRepository;
+
+    private final KafkaTemplate<String, SearchLog> logKafkaTemplate;
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
     private final int batchSize = 10000;
@@ -132,12 +139,21 @@ public class OpenSearchService {
         }
     }
 
-    public BoardDocumentResponseAndCountDto search(String keyword, Integer page, Integer size) throws IOException {
+    public BoardDocumentResponseAndCountDto search(String keyword, Integer page, Integer size, UserDetailsImpl userDetails) {
         String endpoint = String.format("/%s/_search", "board");
         Request request = new Request("GET", endpoint);
+
+        Member member = userDetails != null ? userDetails.getUser() : null;
+
+        SearchLog searchLog = SearchLog.create(keyword, member);
+
         request.setJsonEntity(getRequestBody(keyword, (page-1) * size, size));
-        Response response = restClient.performRequest(request);
-        return parseResponse(response,page,size);
+        try {
+            logKafkaTemplate.send("search-log", keyword, searchLog);
+            return parseResponse(restClient.performRequest(request), page, size);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String getRequestBody(String keyword, int offset, int size) {
