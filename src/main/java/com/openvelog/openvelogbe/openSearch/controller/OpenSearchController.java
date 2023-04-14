@@ -45,7 +45,6 @@ public class OpenSearchController {
     }
 
     @GetMapping("/search")
-    @SecurityRequirements()
     @Operation(summary = "OpenSearch를 이용해 게시글 검색", description = "query_string을 이용해 title과 content 2개의 필드 대상으로 검색")
     public CompletableFuture<?> search(
             @RequestParam String keyword,
