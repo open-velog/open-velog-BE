@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
 import com.openvelog.openvelogbe.openSearch.dto.BoardDocumentDto;
 import com.openvelog.openvelogbe.openSearch.dto.BoardDocumentResponseAndCountDto;
 import lombok.RequiredArgsConstructor;
@@ -132,12 +133,15 @@ public class OpenSearchService {
         }
     }
 
-    public BoardDocumentResponseAndCountDto search(String keyword, Integer page, Integer size) throws IOException {
+    public BoardDocumentResponseAndCountDto search(String keyword, Integer page, Integer size, UserDetailsImpl userDetails) {
         String endpoint = String.format("/%s/_search", "board");
         Request request = new Request("GET", endpoint);
         request.setJsonEntity(getRequestBody(keyword, (page-1) * size, size));
-        Response response = restClient.performRequest(request);
-        return parseResponse(response,page,size);
+        try {
+            return parseResponse(restClient.performRequest(request), page, size);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String getRequestBody(String keyword, int offset, int size) {
