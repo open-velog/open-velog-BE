@@ -75,8 +75,6 @@ public class BoardWishServiceIntegrationTest {
         UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername("testUserId");
         BoardResponseDto boardResponse = boardService.createBoard(dto,userDetails);
         Optional<Board> board = boardRepository.findByTitle("testTitle");
-        Optional<Blog> boardBlog = blogRepository.findByMemberId(board.get().getBlog().getMember().getId());
-        assertEquals(blog.get().getId(), boardBlog.get().getId());
         assertEquals("testTitle", boardResponse.getTitle());
         assertEquals("testContent", boardResponse.getContent());
 

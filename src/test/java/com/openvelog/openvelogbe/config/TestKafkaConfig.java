@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Configuration
 @Profile("test")
-public class TestConfig {
+public class TestKafkaConfig {
 
     @Autowired
     private KafkaProperties kafkaProperties;
