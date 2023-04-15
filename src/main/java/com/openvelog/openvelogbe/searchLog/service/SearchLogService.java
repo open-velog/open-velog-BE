@@ -78,6 +78,6 @@ public class SearchLogService {
         log.info("KeywordRecordScheduler is executed, aggregated keywordLog count : {}", keywordRecords.stream().mapToLong(KeywordRecord::getCount).reduce(0L, Long::sum));
 
 
-//        keywordRecordRepository.saveAll(keywordRecords);
+        keywordRecordRepository.saveAll(keywordRecords);
     }
 }
