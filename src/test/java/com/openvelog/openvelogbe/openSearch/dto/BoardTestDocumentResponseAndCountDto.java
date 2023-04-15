@@ -12,10 +12,10 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardDocumentResponseAndCountDto {
+public class BoardTestDocumentResponseAndCountDto {
 
     @Builder.Default
-    List<BoardDocumentDto> content = new ArrayList<>();
+    List<BoardTestDocumentDto> content = new ArrayList<>();
     @Builder.Default
     Integer totalPages = 0;
     @Builder.Default
@@ -27,8 +27,8 @@ public class BoardDocumentResponseAndCountDto {
     @Builder.Default
     Boolean last = false;
 
-    public static BoardDocumentResponseAndCountDto of(List<BoardDocumentDto> content, Integer currentPage, Integer perPage, Integer totalCount) {
-        BoardDocumentResponseAndCountDtoBuilder builder = builder()
+    public static BoardTestDocumentResponseAndCountDto of(List<BoardTestDocumentDto> content, Integer currentPage, Integer perPage, Integer totalCount) {
+        BoardTestDocumentResponseAndCountDtoBuilder builder = builder()
                 .content(content)
                 .totalElements(totalCount)
                 .pageNumber(currentPage)

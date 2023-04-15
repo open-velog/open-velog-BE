@@ -1,6 +1,7 @@
 package com.openvelog.openvelogbe.keyword.controller;
 
 import com.openvelog.openvelogbe.common.dto.ApiResponse;
+import com.openvelog.openvelogbe.keyword.dto.KeywordRankDto;
 import com.openvelog.openvelogbe.keyword.service.KeywordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Tag(name = "Keyword")
 @RestController
@@ -36,7 +39,7 @@ public class KeywordController {
     @GetMapping("/ranking")
     @SecurityRequirements()
     @Operation(summary = "24시간 내의 키워드 검색 순위", description ="24시간 내의 키워드 검색 순위")
-    public ApiResponse keywordRanking() {
-        return ApiResponse.successOf(HttpStatus.OK,keywordService.keywordRanking2());
+    public ApiResponse<List<KeywordRankDto>> keywordRanking() {
+        return ApiResponse.successOf(HttpStatus.OK,keywordService.keywordRankingByMongoDb());
     }
 }

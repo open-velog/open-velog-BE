@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.Tuple;
@@ -20,6 +23,8 @@ import java.util.stream.Collectors;
 public class RankService {
 
     private final KeywordRecordRepository keywordRecordRepository;
+
+    private final MongoTemplate mongoTemplate;
 
     public List<RankResponseDto.RankKeyword> getKeywordRank(AgeRange ageRange, Gender gender, LocalDate date, Integer limit) {
 

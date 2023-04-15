@@ -1,6 +1,7 @@
-package com.openvelog.openvelogbe.common.entity;
+package com.openvelog.openvelogbe.openSearch.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import com.openvelog.openvelogbe.common.entity.Board;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,13 +14,12 @@ import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 
-@Document(indexName = "board")
+@Document(indexName = "board_test")
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties({"createdAt", "modifiedAt"})
-public class BoardDocument {
+public class BoardTestDocument {
 
     @Id
     private Long id;
@@ -42,7 +42,7 @@ public class BoardDocument {
     @Field(type = FieldType.Long)
     private Integer wish_count;
 
-    public static BoardDocument create (Board board) {
+    public static BoardTestDocument create (Board board) {
         return builder()
                 .id(board.getId())
                 .title(board.getTitle())
@@ -55,3 +55,4 @@ public class BoardDocument {
     }
 
 }
+

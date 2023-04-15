@@ -98,16 +98,13 @@ public class BoardService {
     public BoardResponseAndCountDto searchBoards (String keyword, Integer page, Integer size, UserDetailsImpl userDetails){
         Member member = userDetails != null ? userDetails.getUser() : null;
 
-        Pageable pageable = PageRequest.of(page - 1, size);
-
-//        Page<Board> boards = boardRepository.searchTitleOrContentOrBlogTitle(keyword + "*", pageable);
         List<Board> boards = boardRepository.searchTitleOrContentOrBlogTitle(keyword, (page-1) * size, page * size, size);
         Long totalCount = boardRepository.searchTitleOrContentOrBlogTitleCount(keyword);
 
-        GetAgeRange getAgeRange = new GetAgeRange();
-        AgeRange ageRange = member != null ? getAgeRange.getAge(member) : null;
-        Keyword newkeyword = new Keyword (keyword, member, ageRange);
-        redisRepository.save(newkeyword);
+//        GetAgeRange getAgeRange = new GetAgeRange();
+//        AgeRange ageRange = member != null ? getAgeRange.getAge(member) : null;
+//        Keyword newkeyword = new Keyword (keyword, member, ageRange);
+//        redisRepository.save(newkeyword);
 
         SearchLog searchLog = SearchLog.create(keyword, member);
 
@@ -116,7 +113,6 @@ public class BoardService {
         return BoardResponseAndCountDto.of(
                 boards.stream().map(board -> BoardResponseDto.of(board, member)).collect(Collectors.toList()),
                 page - 1, size, totalCount.intValue());
-//        return boards.stream().map(board -> BoardResponseDto.of(board, member)).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

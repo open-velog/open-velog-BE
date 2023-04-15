@@ -37,6 +37,7 @@ dependencies {
     //querydsl 추가
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
+    testImplementation 'junit:junit:4.13.1'
 
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -59,7 +60,10 @@ dependencies {
 
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.integration:spring-integration-redis:5.5.0'
+    implementation 'org.redisson:redisson:3.16.1'
+
+    // mongodb
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
     //OpenSearchService
     implementation 'com.amazonaws:aws-java-sdk-core:1.12.76'

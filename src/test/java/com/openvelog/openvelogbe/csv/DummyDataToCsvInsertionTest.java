@@ -1,7 +1,7 @@
 package com.openvelog.openvelogbe.csv;
 
 import com.openvelog.openvelogbe.common.entity.Member;
-import com.openvelog.openvelogbe.config.TestConfig;
+import com.openvelog.openvelogbe.config.TestKafkaConfig;
 import com.openvelog.openvelogbe.dummy.MemberDummyGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@Import(TestConfig.class)
+@Import(TestKafkaConfig.class)
 @ActiveProfiles("test")
 public class DummyDataToCsvInsertionTest {
 
