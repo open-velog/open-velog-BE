@@ -3,12 +3,21 @@ package com.openvelog.openvelogbe.keyword.service;
 import com.openvelog.openvelogbe.common.entity.Keyword;
 import com.openvelog.openvelogbe.common.entity.KeywordRecord;
 import com.openvelog.openvelogbe.common.repository.KeywordRedisRepository;
+import com.openvelog.openvelogbe.common.repository.MongoRepositoryImpl;
+import com.openvelog.openvelogbe.common.repository.MongoSearchLogRepository;
 import com.openvelog.openvelogbe.common.repository.SearchLogRepository;
 import com.openvelog.openvelogbe.keyword.dto.KeyWordResponseDto;
+import com.openvelog.openvelogbe.keyword.dto.KeywordRankDto;
+import com.openvelog.openvelogbe.searchLog.dto.SearchKeywordSumDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +31,7 @@ public class KeywordService {
 
     private final KeywordRedisRepository redisRepository;
     private final SearchLogRepository searchLogRepository;
+    private final MongoSearchLogRepository mongoSearchLogRepository;
 
     public List<KeyWordResponseDto> getKeywords(){
         List<Keyword> keywords = redisRepository.findAll();
@@ -63,7 +73,6 @@ public class KeywordService {
         LocalDateTime searchDateTime = LocalDateTime.now().minusDays(1);
         List<Object[]> items = searchLogRepository.getBySearchedDateTime(searchDateTime);
 
-
         List<Map<String, Object>> keywordRankings = new ArrayList<>();
 
         for (Object[] item : items) {
@@ -81,4 +90,12 @@ public class KeywordService {
                 .sorted((a,b) -> (int) ((Long) b.get("count") - (Long) a.get("count")))
                 .collect(Collectors.toList());
     }
+
+//    @Cacheable(value = "searchRanking", cacheManager = "cacheManager")
+    public List<KeywordRankDto> keywordRankingByMongoDb(){
+        LocalDate searchDate = LocalDate.now().minusDays(1);
+
+        return mongoSearchLogRepository.keywordRank(searchDate.atStartOfDay(),searchDate.plusDays(1).atStartOfDay(), 30L);
+    }
 }
+

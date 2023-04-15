@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -44,15 +45,19 @@ public class OpenSearchController {
         }
     }
 
+    @SneakyThrows
     @GetMapping("/search")
     @Operation(summary = "OpenSearch를 이용해 게시글 검색", description = "query_string을 이용해 title과 content 2개의 필드 대상으로 검색")
-    public CompletableFuture<?> search(
+    public String search(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
-            return CompletableFuture.supplyAsync(() ->
-                ApiResponse.successOf(HttpStatus.OK, openSearchService.search(keyword, page, size, userDetails))
-            );
+//            return CompletableFuture.supplyAsync(() ->
+//                ApiResponse.successOf(HttpStatus.OK, openSearchService.search(keyword, page, size, userDetails))
+//            );
+        Thread.sleep(1000);
+        return Thread.currentThread().getName();
+//        return ApiResponse.successOf(HttpStatus.OK, openSearchService.search(keyword, page, size, userDetails));
     }
 }
