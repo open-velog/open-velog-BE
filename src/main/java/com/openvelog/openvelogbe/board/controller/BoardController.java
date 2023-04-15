@@ -39,19 +39,17 @@ public class BoardController {
 
     @GetMapping("/search")
     @Operation(summary = "게시글 검색", description ="게시글 제목, 내용, 해당 블로그의 제목에 키워드가 포함된 게시글 목록 조회, page는 1부터 시작")
-    public CompletableFuture<ApiResponse<BoardResponseAndCountDto>> searchBoards(
+    public ApiResponse<BoardResponseAndCountDto> searchBoards(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return CompletableFuture.supplyAsync(() ->
-             ApiResponse.successOf(HttpStatus.OK, boardService.searchBoards(keyword, page, size, userDetails))
-        );
+        return ApiResponse.successOf(HttpStatus.OK, boardService.searchBoards(keyword, page, size, userDetails));
     }
 
     @GetMapping("/{boardId}")
     @Operation(summary = "게시글 조회", description ="특정 boardId를 갖는 단일 게시글 조회")
-    public CompletableFuture<ApiResponse<BoardResponseDto>> getBoard(
+    public ApiResponse<BoardResponseDto> getBoard(
             @PathVariable Long boardId,
             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
@@ -60,9 +58,7 @@ public class BoardController {
             boardViewEventHandler.handleBoardViewEvent(boardId)
         );
 
-        return CompletableFuture.supplyAsync(() ->
-            ApiResponse.successOf(HttpStatus.OK, boardService.getBoard(boardId, userDetails))
-        );
+        return ApiResponse.successOf(HttpStatus.OK, boardService.getBoard(boardId, userDetails));
     }
 
     @PutMapping("/{boardId}")
@@ -82,6 +78,7 @@ public class BoardController {
             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         boardService.deleteBoard(boardId,userDetails);
+
         return ApiResponse.successOf(HttpStatus.NO_CONTENT, null);
     }
 
