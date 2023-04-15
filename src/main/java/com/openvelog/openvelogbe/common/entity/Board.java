@@ -60,5 +60,9 @@ public class Board extends Timestamped {
                 .build();
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 
 }

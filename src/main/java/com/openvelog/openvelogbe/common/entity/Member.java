@@ -61,6 +61,10 @@ public class Member extends Timestamped {
                 .build();
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @PreRemove
     private void memberIdSetNullAtBoardWish() {
         this.getWishes().forEach(BoardWishMember::setMemberNull);
