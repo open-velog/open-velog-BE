@@ -21,7 +21,7 @@ public class BoardSearchScheduler {
         this.openSearchService = openSearchService;
     }
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 90000)
     public void indexAllBoards() {
         try {
             logger.info("OpenSearchService is executed");

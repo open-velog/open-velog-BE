@@ -35,7 +35,7 @@ public class Board extends Timestamped {
     private Blog blog;
 
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<BoardWishMember> wishes;
 
     public void setBlogNull() {

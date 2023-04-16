@@ -21,15 +21,13 @@ import com.openvelog.openvelogbe.common.repository.BoardRepository;
 import org.opensearch.client.Request;
 import org.opensearch.client.Response;
 import org.opensearch.client.RestClient;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
-import javax.annotation.PostConstruct;
+import org.springframework.stereotype.Service;;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.sql.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -40,33 +38,18 @@ import java.util.concurrent.Future;
 public class OpenSearchService {
 
     private final BoardRepository boardRepository;
-
     private final KafkaTemplate<String, SearchLog> logKafkaTemplate;
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
     private final int batchSize = 10000;
-    private Long lastProcessedBoardId = 0L;
-    @Value("${DATABASE_URL}")
-    private String dbUrl;
 
-    @Value("${DATABASE_USERNAME}")
-    private String dbUsername;
 
-    @Value("${DATABASE_PASSWORD}")
-    private String dbPassword;
-
-    @PostConstruct
-    private void initializeLastProcessedBoardId() {
-        // 저장된 lastProcessedBoardId 값을 가져옵니다.
-        // 이 값은 이전 호출에서 처리한 마지막 Board의 id입니다.
-        lastProcessedBoardId = retrieveLastProcessedBoardIdFromDatabase();
-    }
-
-    public void indexAllBoards() throws IOException {
-        int offset = 0;
+    public void indexAllBoards(int firstDataIndex) throws IOException {
+        //int firstDataIndex = 910000;
+        int currentPage = firstDataIndex / batchSize;
         while (true) {
-            // lastProcessedBoardId 이후의 batchSize개의 Board 데이터를 가져옵니다.
-            List<Board> boards = boardRepository.findByIdGreaterThanOrderByIdAsc(lastProcessedBoardId, PageRequest.of(offset, batchSize)).getContent();
+            // currentPage를 사용하여 batchSize 개의 Board 데이터를 가져옵니다.
+            List<Board> boards = boardRepository.findAll(PageRequest.of(currentPage, batchSize)).getContent();
             if (boards.isEmpty()) {
                 break;
             }
@@ -75,12 +58,12 @@ public class OpenSearchService {
             request.setEntity(entity);
             restClient.performRequest(request);
 
-            // 마지막으로 처리한 Board의 id를 업데이트합니다.
-            lastProcessedBoardId = boards.get(boards.size() - 1).getId();
-            updateLastProcessedBoardIdInDatabase(lastProcessedBoardId);
+            // 다음 페이지로 이동합니다.
+            currentPage++;
+            System.out.println("Current page: " + currentPage);
 
-            offset += batchSize;
-
+            // 전송 완료 메시지 출력
+            System.out.println("Batch transfer completed for " + (currentPage * batchSize) + " records.");
         }
     }
 
@@ -107,37 +90,6 @@ public class OpenSearchService {
         return new NByteArrayEntity(out.toByteArray(), ContentType.APPLICATION_JSON);
     }
 
-    private Connection getConnection() throws SQLException {
-        String url = dbUrl;
-        String user = dbUsername;
-        String password = dbPassword;
-        return DriverManager.getConnection(url, user, password);
-    }
-
-    private Long retrieveLastProcessedBoardIdFromDatabase() {
-        Long lastProcessedBoardId = 0L;
-        try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement()) {
-            String sql = "SELECT last_processed_board_id FROM boards";
-            ResultSet rs = stmt.executeQuery(sql);
-            if (rs.next()) {
-                lastProcessedBoardId = rs.getLong("last_processed_board_id");
-            }
-        } catch (SQLException ex) {
-            // handle exception
-        }
-        return lastProcessedBoardId;
-    }
-
-    private void updateLastProcessedBoardIdInDatabase(Long lastProcessedBoardId) {
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement("UPDATE some_table SET last_processed_board_id = ?")) {
-            ps.setLong(1, lastProcessedBoardId);
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            // handle exception
-        }
-    }
 
     public BoardDocumentResponseAndCountDto search(String keyword, Integer page, Integer size, UserDetailsImpl userDetails) {
         String endpoint = String.format("/%s/_search", "board");
@@ -157,8 +109,8 @@ public class OpenSearchService {
     }
 
     private String getRequestBody(String keyword, int offset, int size) {
-        return String.format("{\"track_total_hits\": true,\"from\": %d, \"size\": %d,\"query\": {\"bool\": {\"should\": [{\"query_string\": {\"query\": \"%s\",\"fields\": [\"title\"],\"default_operator\": \"AND\"}},{\"query_string\": {\"query\": \"%s\",\"fields\": [\"content\"],\"default_operator\": \"AND\"}}],\"minimum_should_match\": 1}}, \"sort\": [{\"id\": {\"order\": \"desc\"}}]}", offset, size, keyword, keyword);
-        //return String.format("{\"track_total_hits\": true,\"from\": %d, \"size\": %d,\"query\": {\"bool\": {\"should\": [{\"match\": {\"title\": {\"query\": \"%s\",\"operator\": \"AND\"}}},{\"match\": {\"content\": {\"query\": \"%s\",\"operator\": \"AND\"}}}],\"minimum_should_match\": 1}}, \"sort\": [{\"id\": {\"order\": \"desc\"}}]}", offset, size, keyword, keyword);
+        return String.format("{\"from\": %d, \"size\": %d, \"query\": {\"bool\": {\"should\": [{\"match_phrase\": {\"title\": \"%s\"}},{\"match_phrase\": {\"content\": \"%s\"}}],\"minimum_should_match\": 1}}, \"sort\": [{\"id\": {\"order\": \"desc\"}}]}", offset, size, keyword, keyword);
+        //return String.format("{\"track_total_hits\": true,\"from\": %d, \"size\": %d, \"_source\": [\"title\", \"content\"],\"query\": {\"bool\": {\"should\": [{\"query_string\": {\"query\": \"%s\",\"fields\": [\"title\"],\"default_operator\": \"AND\",\"minimum_should_match\": \"100%%\"}},{\"query_string\": {\"query\": \"%s\",\"fields\": [\"content\"],\"default_operator\": \"AND\",\"minimum_should_match\": \"100%%\"}}],\"minimum_should_match\": 1}}, \"sort\": [{\"id\": {\"order\": \"desc\"}}]}", offset, size, keyword, keyword);
     }
 
     private BoardDocumentResponseAndCountDto parseResponse(Response response, Integer page, Integer size) throws IOException {
@@ -176,6 +128,7 @@ public class OpenSearchService {
 
         return BoardDocumentResponseAndCountDto.of(result,page-1,size,totalHits);
     }
+
 }
 
 

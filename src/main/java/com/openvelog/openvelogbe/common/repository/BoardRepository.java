@@ -18,18 +18,18 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 //TODO 성능 개선 필요
 @Query(value = "SELECT DISTINCT(id), created_at, modified_at, content, title, view_count, blog_id" +
             " FROM (" +
-            "(SELECT * FROM boards WHERE MATCH(title) AGAINST(:keyword IN BOOLEAN MODE) ORDER BY id DESC LIMIT :totalCount) " +
+            "(SELECT * FROM boards WHERE MATCH(title) AGAINST(:keyword IN BOOLEAN MODE) LIMIT :totalCount) " +
             "UNION ALL" +
-            " (SELECT * FROM boards WHERE MATCH(content) AGAINST(:keyword IN BOOLEAN MODE) ORDER BY id DESC LIMIT :totalCount)" +
-            ") AS combined_results LIMIT :offset, :size", nativeQuery = true)
+            " (SELECT * FROM boards WHERE MATCH(content) AGAINST(:keyword IN BOOLEAN MODE) LIMIT :totalCount)" +
+            ") AS combined_results ORDER BY id DESC LIMIT :offset, :size", nativeQuery = true)
     List<Board> searchTitleOrContentOrBlogTitle(String keyword, Integer offset, Integer totalCount, Integer size);
 
     @Query(value = "select count(distinct combined_results.id) " +
             " FROM (" +
-            "(SELECT * FROM boards WHERE MATCH(title) AGAINST(:keyword IN BOOLEAN MODE) ORDER BY id DESC) " +
+            "(SELECT * FROM boards WHERE MATCH(title) AGAINST(:keyword IN BOOLEAN MODE)) " +
             "UNION ALL" +
-            " (SELECT * FROM boards WHERE MATCH(content) AGAINST(:keyword IN BOOLEAN MODE) ORDER BY id DESC) " +
-            ") AS combined_results", nativeQuery = true)
+            " (SELECT * FROM boards WHERE MATCH(content) AGAINST(:keyword IN BOOLEAN MODE)) " +
+            ") AS combined_results  ORDER BY id DESC", nativeQuery = true)
     Long searchTitleOrContentOrBlogTitleCount(String keyword);
     Optional<Board> findById(Long boardId);
     Optional<Board> findByTitle(String title);
@@ -58,6 +58,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Page<Board> findByIdGreaterThanOrderByIdAsc(Long lastProcessedBoardId, Pageable pageable);
 
-
+    List<Board> findByTitleContainingOrContentContaining(String titleKeyword, String contentKeyword);
 
 }

@@ -4,6 +4,7 @@ import com.openvelog.openvelogbe.board.dto.BoardResponseAndCountDto;
 import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
 import com.openvelog.openvelogbe.openSearch.dto.BoardDocumentDto;
 import com.openvelog.openvelogbe.openSearch.dto.BoardDocumentResponseAndCountDto;
+import com.openvelog.openvelogbe.openSearch.service.OpenSearchDifference;
 import com.openvelog.openvelogbe.openSearch.service.OpenSearchService;
 import com.openvelog.openvelogbe.common.dto.ApiResponse;
 import com.openvelog.openvelogbe.common.dto.ErrorResponseDto;
@@ -30,14 +31,15 @@ import org.slf4j.LoggerFactory;
 @RequestMapping("/api/opensearch")
 public class OpenSearchController {
     private final OpenSearchService openSearchService;
+    private final OpenSearchDifference openSearchDifference;
     private static final Logger logger = LoggerFactory.getLogger(OpenSearchController.class);
 
     @PostMapping("/index")
     @SecurityRequirements()
-    @Operation(summary = "MySQL to OpenSearch", description = "BoardDocument의 클래스 내부 변수들을 필드로 선언")
-    public ApiResponse<?> indexAllBoardsToOpensearch() {
+    @Operation(summary = "테스트용 api = MySql to OpenSearch", description = "입력한 숫자번째 데이터부터 인덱싱 됩니다")
+    public ApiResponse<?> indexAllBoardsToOpensearch(@RequestParam int firstDataIndex) {
         try {
-            openSearchService.indexAllBoards();
+            openSearchService.indexAllBoards(firstDataIndex);
             return ApiResponse.successOf(HttpStatus.CREATED,"색인이 완료되었습니다.");
         } catch (IOException e) {
             logger.error("데이터 색인 중 예외 발생", e);
@@ -59,5 +61,12 @@ public class OpenSearchController {
         Thread.sleep(1000);
         return Thread.currentThread().getName();
 //        return ApiResponse.successOf(HttpStatus.OK, openSearchService.search(keyword, page, size, userDetails));
+    }
+
+    @GetMapping("/compare")
+    @SecurityRequirements()
+    @Operation(summary = "테스트 용 api = OpenSearch와 MySql 검색결과 비교", description = "검색 방식 비교를 위한 api")
+    public void compareSearchResults(@RequestParam String keyword) {
+        openSearchDifference.compareSearchResults(keyword);
     }
 }
