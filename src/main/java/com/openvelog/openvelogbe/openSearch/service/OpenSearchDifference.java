@@ -46,9 +46,16 @@ public class OpenSearchDifference {
 
 
     public void compareSearchResults(String keyword) {
+        long startTime = System.currentTimeMillis();
         Set<Long> mySqlResults = searchBoardsFromMySql(keyword);
-        Set<Long> openSearchResults = searchBoardsFromOpenSearch(keyword);
+        long mySqlTime = System.currentTimeMillis() - startTime;
 
+        startTime = System.currentTimeMillis();
+        Set<Long> openSearchResults = searchBoardsFromOpenSearch(keyword);
+        long openSearchTime = System.currentTimeMillis() - startTime;
+
+        System.out.println("MySQL 검색api 소요 시간: " + mySqlTime + "ms");
+        System.out.println("OpenSearch 검색api 소요 시간: " + openSearchTime + "ms");
         System.out.println("MySQL에서 반환된 게시글 ID의 총 수: " + mySqlResults.size());
         System.out.println("OpenSearch에서 반환된 게시글 ID의 총 수: " + openSearchResults.size());
 
