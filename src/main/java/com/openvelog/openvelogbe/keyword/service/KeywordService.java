@@ -93,9 +93,9 @@ public class KeywordService {
 
     @Cacheable(value = "searchRanking", cacheManager = "cacheManager")
     public List<KeywordRankDto> keywordRankingByMongoDb(){
-        LocalDate searchDate = LocalDate.now().minusDays(1);
+        LocalDateTime searchDateTime = LocalDateTime.now().minusHours(24);
 
-        return mongoSearchLogRepository.keywordRank(searchDate.atStartOfDay(),searchDate.plusDays(1).atStartOfDay(), 30L);
+        return mongoSearchLogRepository.keywordRank(searchDateTime, LocalDateTime.now(), 30L);
     }
 }
 
