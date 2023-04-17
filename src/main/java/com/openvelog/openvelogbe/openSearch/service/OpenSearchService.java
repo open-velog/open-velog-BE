@@ -93,7 +93,6 @@ public class OpenSearchService {
         return new NByteArrayEntity(out.toByteArray(), ContentType.APPLICATION_JSON);
     }
 
-
     public BoardDocumentResponseAndCountDto search(String keyword, Integer page, Integer size, UserDetailsImpl userDetails) {
         String endpoint = String.format("/%s/_search", "board");
         Request request = new Request("GET", endpoint);
@@ -118,8 +117,34 @@ public class OpenSearchService {
     }
 
     private String getRequestBody(String keyword, int offset, int size) {
-        return String.format("{\"from\": %d, \"size\": %d, \"query\": {\"bool\": {\"should\": [{\"match_phrase\": {\"title\": \"%s\"}},{\"match_phrase\": {\"content\": \"%s\"}}],\"minimum_should_match\": 1}}, \"sort\": [{\"id\": {\"order\": \"desc\"}}]}", offset, size, keyword, keyword);
-        //return String.format("{\"track_total_hits\": true,\"from\": %d, \"size\": %d, \"_source\": [\"title\", \"content\"],\"query\": {\"bool\": {\"should\": [{\"query_string\": {\"query\": \"%s\",\"fields\": [\"title\"],\"default_operator\": \"AND\",\"minimum_should_match\": \"100%%\"}},{\"query_string\": {\"query\": \"%s\",\"fields\": [\"content\"],\"default_operator\": \"AND\",\"minimum_should_match\": \"100%%\"}}],\"minimum_should_match\": 1}}, \"sort\": [{\"id\": {\"order\": \"desc\"}}]}", offset, size, keyword, keyword);
+        String[] keywords = keyword.split(" ");
+        StringBuilder shouldClauses = new StringBuilder();
+
+        if (keywords.length == 1) {
+            // 단일 검색어
+            shouldClauses.append(String.format("{\"match_phrase\": {\"title\": {\"query\": \"%s\"}}},", keyword));
+            shouldClauses.append(String.format("{\"match_phrase\": {\"content\": {\"query\": \"%s\"}}},", keyword));
+
+            // 마지막에 추가된 콤마(,)를 제거하는 작업
+            shouldClauses.setLength(shouldClauses.length() - 1);
+            return String.format("{\"from\": %d, \"size\": %d, \"query\": {\"bool\": {\"should\": [%s]}}, \"sort\": [{\"id\": {\"order\": \"desc\"}}]}", offset, size, shouldClauses.toString());
+
+        } else {
+            // 분할된 키워드 검색
+            StringBuilder titleSpanClauses = new StringBuilder();
+            StringBuilder contentSpanClauses = new StringBuilder();
+
+            for (String word : keywords) {
+                titleSpanClauses.append(String.format("{\"span_term\": {\"title\": \"%s\"}},", word));
+                contentSpanClauses.append(String.format("{\"span_term\": {\"content\": \"%s\"}},", word));
+            }
+
+            // 마지막에 추가된 콤마(,)를 제거하는 작업
+            titleSpanClauses.setLength(titleSpanClauses.length() - 1);
+            contentSpanClauses.setLength(contentSpanClauses.length() - 1);
+
+            return String.format("{\"from\": %d, \"size\": %d, \"query\": {\"bool\": {\"should\": [{\"span_near\": {\"clauses\": [%s], \"slop\": 25, \"in_order\": true}}, {\"span_near\": {\"clauses\": [%s], \"slop\": 25, \"in_order\": true}}]}}, \"sort\": [{\"id\": {\"order\": \"desc\"}}]}", offset, size, titleSpanClauses.toString(), contentSpanClauses.toString());
+        }
     }
 
     private BoardDocumentResponseAndCountDto parseResponse(Response response, Integer page, Integer size) throws IOException {
