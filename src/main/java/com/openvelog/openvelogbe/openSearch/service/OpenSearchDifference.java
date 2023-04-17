@@ -29,7 +29,7 @@ public class OpenSearchDifference {
         return boardIds;
     }
 
-    public Set<Long> searchBoardsFromOpenSearch(String keyword ) {
+    public Set<Long> searchBoardsFromOpenSearch(String keyword) {
         int page = 1;
         int size = 100; // 한 번에 가져올 데이터 크기를 지정합니다.
         BoardDocumentResponseAndCountDto results = openSearchService.search(keyword, page, size, null);

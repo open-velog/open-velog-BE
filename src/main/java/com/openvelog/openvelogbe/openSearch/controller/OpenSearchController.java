@@ -49,7 +49,7 @@ public class OpenSearchController {
 
     @SneakyThrows
     @GetMapping("/search")
-    @Operation(summary = "OpenSearch를 이용해 게시글 검색", description = "query_string을 이용해 title과 content 2개의 필드 대상으로 검색")
+    @Operation(summary = "OpenSearch를 이용해 게시글 검색", description = "match_phrase를 이용해 title과 content 2개의 필드 대상으로 검색")
     public CompletableFuture<ApiResponse<?>> search(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "1") Integer page,
