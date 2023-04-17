@@ -1,14 +1,12 @@
 package com.openvelog.openvelogbe.config;
 
+import com.openvelog.openvelogbe.common.repository.MongoSearchLogRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -27,7 +25,8 @@ import java.util.Map;
 @EnableJpaRepositories(
         basePackages = "com.openvelog.openvelogbe.common",
         entityManagerFactoryRef = "testAppEntityManagerFactory",
-        transactionManagerRef = "testAppMysqlTransactionManager"
+        transactionManagerRef = "testAppMysqlTransactionManager",
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = MongoSearchLogRepository.class)
 )
 public class TestAppMysqlDatabaseConfig {
     @Value("#{${test-app.jpa}}")
