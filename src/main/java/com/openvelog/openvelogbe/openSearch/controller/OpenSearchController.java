@@ -48,16 +48,13 @@ public class OpenSearchController {
     @SneakyThrows
     @GetMapping("/search")
     @Operation(summary = "OpenSearch를 이용해 게시글 검색", description = "query_string을 이용해 title과 content 2개의 필드 대상으로 검색")
-    public String search(
+    public CompletableFuture<ApiResponse<?>> search(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//            return CompletableFuture.supplyAsync(() ->
-//                ApiResponse.successOf(HttpStatus.OK, openSearchService.search(keyword, page, size, userDetails))
-//            );
-        Thread.sleep(1000);
-        return Thread.currentThread().getName();
-//        return ApiResponse.successOf(HttpStatus.OK, openSearchService.search(keyword, page, size, userDetails));
+            return CompletableFuture.supplyAsync(() ->
+                ApiResponse.successOf(HttpStatus.OK, openSearchService.search(keyword, page, size, userDetails))
+            );
     }
 }

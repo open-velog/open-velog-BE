@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.openvelog.openvelogbe.common.entity.Member;
-import com.openvelog.openvelogbe.common.entity.SearchLog;
+import com.openvelog.openvelogbe.common.entity.*;
+import com.openvelog.openvelogbe.common.entity.enums.AgeRange;
+import com.openvelog.openvelogbe.common.repository.KeywordRedisRepository;
 import com.openvelog.openvelogbe.common.security.UserDetailsImpl;
+import com.openvelog.openvelogbe.common.util.GetAgeRange;
 import com.openvelog.openvelogbe.openSearch.dto.BoardDocumentDto;
 import com.openvelog.openvelogbe.openSearch.dto.BoardDocumentResponseAndCountDto;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +17,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NByteArrayEntity;
 import org.elasticsearch.action.index.IndexRequest;
-import com.openvelog.openvelogbe.common.entity.Board;
-import com.openvelog.openvelogbe.common.entity.BoardDocument;
 import com.openvelog.openvelogbe.common.repository.BoardRepository;
 import org.opensearch.client.Request;
 import org.opensearch.client.Response;
@@ -40,6 +40,8 @@ import java.util.concurrent.Future;
 public class OpenSearchService {
 
     private final BoardRepository boardRepository;
+
+    private final KeywordRedisRepository redisRepository;
 
     private final KafkaTemplate<String, SearchLog> logKafkaTemplate;
     private final RestClient restClient;
@@ -149,6 +151,12 @@ public class OpenSearchService {
 
         request.setJsonEntity(getRequestBody(keyword, (page-1) * size, size));
         try {
+
+//            GetAgeRange getAgeRange = new GetAgeRange();
+//            AgeRange ageRange = member != null ? getAgeRange.getAge(member) : null;
+//            Keyword newkeyword = new Keyword (keyword, member, ageRange);
+//            redisRepository.save(newkeyword);
+
             logKafkaTemplate.send("search-log", keyword, searchLog);
             return parseResponse(restClient.performRequest(request), page, size);
         } catch (IOException e) {
