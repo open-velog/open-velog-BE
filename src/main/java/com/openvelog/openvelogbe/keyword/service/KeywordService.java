@@ -91,7 +91,7 @@ public class KeywordService {
                 .collect(Collectors.toList());
     }
 
-//    @Cacheable(value = "searchRanking", cacheManager = "cacheManager")
+    @Cacheable(value = "searchRanking", cacheManager = "cacheManager")
     public List<KeywordRankDto> keywordRankingByMongoDb(){
         LocalDate searchDate = LocalDate.now().minusDays(1);
 
